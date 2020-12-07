@@ -16,18 +16,28 @@ import com.example.myapplication.R;
 import com.example.myapplication.activity.ChatActivity;
 import com.example.myapplication.activity.LoginActivity;
 import com.example.myapplication.model.Message;
+import com.example.myapplication.model.User;
 
 import java.util.List;
 
 public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
     private List<Message> sms;
     private Context mContext;
+    private int ToUserID,UserID;
     private LayoutInflater mLayoutInflater;
 //    public static boolean isMe;
 
     public ChatAdapter(Context context, List<Message> sms) {
         this.mContext = context;
         this.sms = sms;
+        this.mLayoutInflater = LayoutInflater.from(context);
+    }
+
+    public ChatAdapter(Context context, List<Message> sms,int ToUserID,int UserID) {
+        this.mContext = context;
+        this.sms = sms;
+        this.ToUserID = ToUserID;
+        this.UserID = UserID;
         this.mLayoutInflater = LayoutInflater.from(context);
     }
 
@@ -43,11 +53,11 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int position) {
         Message message = sms.get(position);
         if (message != null) {
-            if (message.getUserID()==new LoginActivity().UserID && message.getToUserID()==new ChatActivity().ToUserID ) {
+            if (message.getUserID()==UserID && message.getToUserID()==ToUserID ) {
                 viewHolder.tvSend.setText(message.getText());
                 viewHolder.tvSend.setVisibility(View.VISIBLE);
                 viewHolder.tvReceive.setVisibility(View.GONE);
-            } else if (message.getToUserID()==new LoginActivity().UserID && message.getUserID()==new ChatActivity().ToUserID ) {
+            } else if (message.getUserID()==ToUserID && message.getToUserID()==UserID ) {
                 viewHolder.tvReceive.setText(message.getText());
                 viewHolder.tvSend.setVisibility(View.GONE);
                 viewHolder.tvReceive.setVisibility(View.VISIBLE);

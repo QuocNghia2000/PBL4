@@ -8,9 +8,9 @@ public class Message {
     public int UserID;
     public int ToUserID;
     public String Text;
-    public Date Time;
+    public String Time;
 
-    public Message(int _MessageID,int _RoomID,int _UserID, int _ToUserID,String _Text,Date _Time)
+    public Message(int _MessageID,int _RoomID,int _UserID, int _ToUserID,String _Text,String _Time)
     {
         this.MessageID=_MessageID;
         this.RoomID=_RoomID;
@@ -18,6 +18,13 @@ public class Message {
         this.ToUserID=_ToUserID;
         this.Text=_Text;
         this.Time=_Time;
+    }
+
+    public Message(int _UserID, int _ToUserID,String _Text)
+    {
+        this.UserID=_UserID;
+        this.ToUserID=_ToUserID;
+        this.Text=_Text;
     }
 
     public int getMessageID() {
@@ -60,11 +67,11 @@ public class Message {
         Text = text;
     }
 
-    public Date getTime() {
+    public String getTime() {
         return Time;
     }
 
-    public void setTime(Date time) {
+    public void setTime(String time) {
         Time = time;
     }
 }
