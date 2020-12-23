@@ -124,6 +124,28 @@
                    android:textStyle="bold" />
            </LinearLayout>
        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="20dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <CheckBox
+                android:id="@+id/cbRemember"
+                android:layout_width="50dp"
+                android:layout_height="30dp"
+                android:checked="false"
+                android:gravity="center_horizontal" />
+
+            <TextView
+                android:layout_width="120dp"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="Lưu mật khẩu"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+        </LinearLayout>
     </LinearLayout>
 
 </LinearLayout>

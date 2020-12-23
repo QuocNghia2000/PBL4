@@ -1,12 +1,17 @@
 package com.example.myapplication.activity;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
+import android.os.Handler;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -16,6 +21,7 @@ import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.ImageSpan;
 import android.util.Log;
+import android.view.Menu;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -25,18 +31,21 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkResponse;
+import com.android.volley.ParseError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.myapplication.R;
 import com.example.myapplication.adapter.ChatAdapter;
-import com.example.myapplication.fragment.ContactFragment;
-import com.example.myapplication.fragment.ContactFragment.CustomRequest;
+//import com.example.myapplication.fragment.ContactFragment;
+//import com.example.myapplication.fragment.ContactFragment.CustomRequest;
 import com.example.myapplication.model.Message;
 
 import org.json.JSONArray;
@@ -45,6 +54,7 @@ import org.json.JSONObject;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -54,6 +64,7 @@ import java.util.Map;
 public class ChatActivity extends AppCompatActivity implements View.OnClickListener{
     public static int ToUserID,UserID;
     private String url="http://192.168.1.239:8888/PBL4/Git_PBL4/select_message.php";
+    private String urlIN="http://192.168.1.239:8888/PBL4/Git_PBL4/insert_message.php";
     ListView listView;
     private static ArrayList<Message> smss;
     private EditText edtEnter;
@@ -67,26 +78,93 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     private ChatAdapter chatAdapter;
     private Toolbar toolbar;
     private LinearLayout layoutIcons,linearLayoutChat;
+    private static String textsms;
+    private Handler handler;
 
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)  {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.chat_layout);
-
+        //Toast.makeText(this,new java.util.Date().toString(),Toast.LENGTH_SHORT).show();
         UserID=this.getIntent().getExtras().getInt("idCurrentUser");
         ToUserID = this.getIntent().getExtras().getInt("idUsername");
         init();
         initRecyclerView();
         handle();
         Get_Message(url);
+        //inithandler();
     }
-
-
-    private  void SendMessage(String url)
+//    @SuppressLint("ResourceType")
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        getMenuInflater().inflate(R.layout.bt_search_actionbar, menu);
+//        return true;
+//    }
+    private void inithandler() {
+        handler=new Handler()
+        {
+            @Override
+            public void handleMessage(@NonNull android.os.Message msg) {
+                if(msg.what==UserID)
+                {
+                    smss= (ArrayList<Message>) msg.obj;
+                    chatAdapter.notifyDataSetChanged();
+                }
+            }
+        };
+    }
+    public void Update_sms(final ArrayList<Message> smss)
+    {
+        final Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                android.os.Message message = new android.os.Message();
+                message.what=UserID;
+                message.obj=smss;
+                handler.sendMessage(message);
+                try {
+                    Thread.sleep(10000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        thread.start();
+    }
+    public  ArrayList<Message> getSmss(final JSONObject object) throws JSONException {
+        final Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                android.os.Message message = new android.os.Message();
+                message.what=UserID;
+                try {
+                    smss.add(new Message(
+                            object.getInt("MessageID"),
+                            object.getInt("RoomID"),
+                            object.getInt("UserID"),
+                            object.getInt("ToUserID"),
+                            object.getString("Text"),
+                            object.getString("Time")
+                    ));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                message.obj=smss;
+                handler.sendMessage(message);
+                try {
+                    Thread.sleep(10000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        thread.start();
+        return smss;
+    }
+    private  void SendMessage(String url_send)
     {
         RequestQueue requestQueue = Volley.newRequestQueue(this);
-        StringRequest jsonArrayRequest = new StringRequest(Request.Method.POST, url,
+        StringRequest jsonArrayRequest = new StringRequest(Request.Method.POST, url_send,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -94,6 +172,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                        {
                            Toast.makeText(ChatActivity.this,"Không thể gửi tin nhắn",Toast.LENGTH_SHORT).show();
                        }
+                       else  Get_Message(url);
                     }
                 }, new Response.ErrorListener() {
             @Override
@@ -104,15 +183,17 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String ,String> params = new HashMap<>();
-                //params.put("Text",edtuser.getText().toString().trim());//Text
-                //params.put("UserID",edtpass.getText().toString().trim());//UserID
-                //params.put("ToUserID",edtpass.getText().toString().trim());//ToUserID
-                //params.put("RoomID",edtpass.getText().toString().trim());//RoomID
-                //params.put("Time",edtfullname.getText().toString().trim());//Time
+                params.put("Text",textsms);//Text
+                params.put("UserID",String.valueOf(UserID).trim());//UserID
+                params.put("ToUserID",String.valueOf(ToUserID).trim());//ToUserID
+                params.put("RoomID","1");//RoomID
+                params.put("Time", new java.util.Date().toString().trim());//Time
                 return params;
             }
         };
         requestQueue.add(jsonArrayRequest);
+        //chatAdapter.notifyDataSetChanged();
+        edtEnter.setText("");
     }
     public void Get_Message(String url)
     {
@@ -121,7 +202,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
-                Toast.makeText(ChatActivity.this,response.toString(),Toast.LENGTH_SHORT).show();
+                //Toast.makeText(ChatActivity.this,response.toString(),Toast.LENGTH_SHORT).show();
+                smss.clear();
                 try {
                     JSONArray jsonArray= response.getJSONArray("message");
                     for(int i=0;i<jsonArray.length();i++)
@@ -137,17 +219,17 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                                 jsonObject.getString("Time")
                         ));
                         //Toast.makeText(ChatActivity.this,String.valueOf(smss.size()),Toast.LENGTH_SHORT).show();
+                        chatAdapter.notifyDataSetChanged();
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                chatAdapter.notifyDataSetChanged();
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                //Toast.makeText(getApplicationContext(), "Error."+error.toString(), Toast.LENGTH_SHORT).show();
-                //Log.d("response",""+error.toString());
+                Toast.makeText(getApplicationContext(), "Error."+error.toString(), Toast.LENGTH_SHORT).show();
+                Log.d("response",""+error.toString());
             }
         }) {
             @Override
@@ -159,7 +241,6 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 Map<String, String> params = new HashMap<String, String>();
                 params.put("UserID",String.valueOf(UserID));
                 params.put("ToUserID",String.valueOf(ToUserID));
-                Toast.makeText(ChatActivity.this,String.valueOf(UserID),Toast.LENGTH_SHORT).show();
                 return params;
             }
         };
@@ -172,6 +253,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         rcv = (RecyclerView)findViewById(R.id.rcv_chat);
         chatAdapter = new ChatAdapter(this,smss,ToUserID,UserID);
         LinearLayoutManager llm =new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false);
+        llm.setStackFromEnd(true);
         rcv.setLayoutManager(llm);
         rcv.setAdapter(chatAdapter);
     }
@@ -213,13 +295,14 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onClick(View v) {
                 scrollRecycleView();
-                if(edtEnter.getText().toString()!=null || (edtEnter.getText().toString()!=""))
+                if(!edtEnter.getText().toString().equals(""))
                 {
-                    String value = edtEnter.getText().toString();
-                    //Date time = new Date();
-                    Message smsCurrent = new Message(UserID,ToUserID,value);
-                    smss.add(smsCurrent);//Post len database
-                    edtEnter.setText("");
+                    textsms = edtEnter.getText().toString().trim();
+                    //Toast.makeText(getApplicationContext(),textsms,Toast.LENGTH_SHORT).show();
+                    SendMessage(urlIN);
+                }
+                else {
+                    Toast.makeText(getApplicationContext(),"okok",Toast.LENGTH_SHORT).show();
                 }
 
             }
@@ -248,25 +331,25 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 setIcon("><", R.drawable.angry);
                 break;
             case R.id.icon_cry:
-                setIcon("😢", R.drawable.cry);
+                setIcon("<>3", R.drawable.cry);
                 break;
             case R.id.icon_died:
-                setIcon("😑", R.drawable.died);
+                setIcon("-_-", R.drawable.died);
                 break;
             case R.id.icon_embarass:
                 setIcon("@@", R.drawable.embarrass);
                 break;
             case R.id.icon_happy:
-                setIcon("😃", R.drawable.happy);
+                setIcon(":D", R.drawable.happy);
                 break;
             case R.id.icon_love:
-                setIcon("❤", R.drawable.love);
+                setIcon("<3", R.drawable.love);
                 break;
             case R.id.icon_sad:
-                setIcon("🙁", R.drawable.sad);
+                setIcon(":(", R.drawable.sad);
                 break;
             case R.id.icon_shy:
-                setIcon("🙂", R.drawable.shy);
+                setIcon(":)", R.drawable.shy);
                 break;
             case R.id.icon_sleepy:
                 setIcon("-.-", R.drawable.sleep);
@@ -347,5 +430,50 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         }
 
     }
+    public static class CustomRequest extends Request<JSONObject> {
+
+        private Response.Listener<JSONObject> listener;
+        private Map<String, String> params;
+
+        public CustomRequest(String url, Map<String, String> params,
+                             Response.Listener<JSONObject> reponseListener, Response.ErrorListener errorListener) {
+            super(Method.GET, url, errorListener);
+            this.listener = reponseListener;
+            this.params = params;
+        }
+
+        public CustomRequest(int method, String url, Map<String, String> params,
+                             Response.Listener<JSONObject> reponseListener, Response.ErrorListener errorListener) {
+            super(method, url, errorListener);
+            this.listener = reponseListener;
+            this.params = params;
+        }
+
+        protected Map<String, String> getParams()
+                throws com.android.volley.AuthFailureError {
+            return params;
+        };
+
+        @Override
+        protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
+            try {
+                String jsonString = new String(response.data,
+                        HttpHeaderParser.parseCharset(response.headers));
+                return Response.success(new JSONObject(jsonString),
+                        HttpHeaderParser.parseCacheHeaders(response));
+            } catch (UnsupportedEncodingException e) {
+                return Response.error(new ParseError(e));
+            } catch (JSONException je) {
+                return Response.error(new ParseError(je));
+            }
+        }
+
+        @Override
+        protected void deliverResponse(JSONObject response) {
+            // TODO Auto-generated method stub
+            listener.onResponse(response);
+        }
+    }
+
 
 }

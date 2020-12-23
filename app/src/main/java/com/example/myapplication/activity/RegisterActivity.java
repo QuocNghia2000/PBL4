@@ -37,7 +37,7 @@ public class RegisterActivity extends AppCompatActivity {
         bt_register.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!edtuser.getText().toString().trim().isEmpty()||!edtpass.getText().toString().isEmpty()||!edtfullname.getText().toString().isEmpty())
+                if(!edtuser.getText().toString().trim().isEmpty()&&!edtpass.getText().toString().isEmpty()&&!edtfullname.getText().toString().isEmpty())
                 {
                     register(url_register);
                 }

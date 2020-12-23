@@ -16,13 +16,15 @@ import java.util.ArrayList;
 
 public class ContactAdapter extends BaseAdapter {
     private ArrayList<User> userList;
+    private  ArrayList<Integer> user_online;
     private Context context;
     LayoutInflater inflater;
 
-    public ContactAdapter (ArrayList<User> userList, Context context)
+    public ContactAdapter (ArrayList<User> userList,ArrayList<Integer> user_online, Context context)
     {
         this.context = context;
         this.userList = userList;
+        this.user_online = user_online;
         inflater = LayoutInflater.from(context);
     }
     @Override
@@ -54,9 +56,18 @@ public class ContactAdapter extends BaseAdapter {
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
-        holder.name.setText(user.getUsername());
+        holder.name.setText(user.getFullName());
         //holder.image.setImageResource(user.ge());
-        holder.status.setText("offline");
+        boolean check=false;
+       for(int i=0;i<user_online.size();i++)
+       {
+           if(user.getUserID()==user_online.get(i))
+           {
+               check=true;
+           }
+       }
+       if(check) holder.status.setText("online");
+       else  holder.status.setText("offline");
         return convertView;
     }
     static class ViewHolder {

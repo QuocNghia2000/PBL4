@@ -12,6 +12,11 @@ public class User {
         this.password=_password;
         this.fullName=_fullname;
     }
+    public User(int _UserID,String _Fullname)
+    {
+        this.userID=_UserID;
+        this.fullName=_Fullname;
+    }
 
     public void setUserID(int userID) {
         this.userID = userID;

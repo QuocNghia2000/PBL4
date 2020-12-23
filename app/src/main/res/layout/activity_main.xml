@@ -8,10 +8,53 @@
     android:layout_height="match_parent"
 
     tools:context="com.example.myapplication.activity.LoginActivity">
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="#512381">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageButton
+                android:id="@+id/imgbt_logout"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_alignParentRight="true"
+                android:src="@drawable/ic_baseline_power"/>
+        </RelativeLayout>
+    </FrameLayout>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        >
+        <ImageButton
+            android:id="@+id/img_search"
+            android:layout_width="50dp"
+            android:layout_height="40dp"
+            android:src="@drawable/img_search"/>
+        <MultiAutoCompleteTextView
+            android:id="@+id/edt_search"
+            android:layout_width="300dp"
+            android:layout_height="40dp"
+            android:layout_weight="0.6"
+            android:background="@drawable/ed_boder"
+            android:hint="Tìm kiếm"
+            android:textColorHighlight="#083209"
+            android:textColorLink="#031263"
+            />
+        <ImageButton
+            android:id="@+id/img_delete"
+            android:layout_width="50dp"
+            android:layout_height="40dp"
+            android:src="@drawable/ic_delete"/>
+    </LinearLayout>
     <android.support.design.widget.TabLayout
         android:id="@+id/tablayout"
         android:layout_width="match_parent"
-        android:layout_height="80dp"
+        android:layout_height="50dp"
         android:background="#512381"
         app:tabTextColor="@color/white"
         app:tabGravity="fill"

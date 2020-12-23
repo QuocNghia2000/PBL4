@@ -47,8 +47,13 @@ import static com.example.myapplication.activity.LoginActivity.listuser;
 
 public class ContactFragment extends Fragment {
     String url_mess="http://192.168.1.239:8888/PBL4/Git_PBL4/message_user.php";
-    String url_user="http://192.168.1.239:8888/PBL4/Git_PBL4/infor_ToUserID_Mess.php";
+    String url_user="http://192.168.1.239:8888/PBL4/Git_PBL4/select_user.php";
+    String url_search="http://192.168.1.239:8888/PBL4/Git_PBL4/search.php";
+    String url_user_online="http://192.168.1.239:8888/PBL4/Git_PBL4/login.php";
+    private ArrayList<User> Listuser;
     int idCurrentUser;
+    String fullname;
+    ArrayList<Integer> list_user_online;
     public static ArrayList<Integer> sms;
     public static ArrayList<User> userArrayList;
     ArrayList<User> userList;
@@ -60,6 +65,7 @@ public class ContactFragment extends Fragment {
         View view = inflater.inflate(R.layout.contact_fragment, container, false);
         init(view);
         Get_User_Contact(url_mess);
+        Get_user_online(url_user_online);
         return view;
     }
 
@@ -69,10 +75,11 @@ public class ContactFragment extends Fragment {
         sms=new ArrayList<>();
         userArrayList=new ArrayList<>();
         userList=new ArrayList<>();
+        list_user_online=new ArrayList<>();
     }
     private  void handle( final ArrayList<User> userArrayList)
     {
-        ArrayList<User> Listuser = new ArrayList<User>();
+        Listuser = new ArrayList<User>();
         for(int i=0;i<userArrayList.size();i++)
         {
             boolean check=true;
@@ -85,22 +92,107 @@ public class ContactFragment extends Fragment {
             }
             if(check==false)  Listuser.add(userArrayList.get((i)));
         }
-
         //Toast.makeText(getActivity(), String.valueOf(idCurrentUser), Toast.LENGTH_SHORT).show();
-        adapter = new ContactAdapter(Listuser, getActivity());
+        adapter = new ContactAdapter(Listuser,list_user_online, getActivity());
         lvcontact.setAdapter(adapter);
         lvcontact.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent gotochat = new Intent(getActivity(), ChatActivity.class);
-
-                gotochat.putExtra("nameCurrent",userArrayList.get(position).fullName);
-                gotochat.putExtra("idUsername",userArrayList.get(position).userID);
-                gotochat.putExtra("idCurrentUser",idCurrentUser);
+                Toast.makeText(getActivity(), Listuser.get(position).fullName, Toast.LENGTH_SHORT).show();
+                gotochat.putExtra("nameCurrent", Listuser.get(position).fullName);
+                gotochat.putExtra("idUsername", Listuser.get(position).userID);
+                gotochat.putExtra("idCurrentUser", idCurrentUser);
                 //gotochat.putExtra("status",userList.get(position).status);
                 startActivity(gotochat);
             }
         });
+    }
+
+    public void Get_List_User_Seacrch(String url)
+    {
+        idCurrentUser = getActivity().getIntent().getExtras().getInt("idCurrentUser");
+        fullname=getActivity().getIntent().getExtras().getString("fullname");
+        RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+        CustomRequest request = new CustomRequest(Request.Method.POST, url, null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    JSONArray jsonArray = response.getJSONArray("user");
+                    for(int i=0;i<jsonArray.length();i++)
+                    {
+                        JSONObject jsonObject = jsonArray.getJSONObject(i);
+                        userArrayList.add(new User(
+                                jsonObject.getInt("UserID"),
+                                jsonObject.getString("Username"),
+                                jsonObject.getString("Password"),
+                                jsonObject.getString("Fullname")
+                        ));
+                    }
+                    GetData(url_user,sms);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(getActivity(), "Error."+error.toString(), Toast.LENGTH_SHORT).show();
+                Log.d("response",""+error.toString());
+            }
+        }) {
+            @Override
+            public String getBodyContentType() {
+                return "application/x-www-form-urlencoded; charset=UTF-8";
+            }
+
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("UserID",String.valueOf(idCurrentUser));
+                params.put("UserID",fullname);
+                return params;
+            }
+        };
+        requestQueue.add(request);
+    }
+    public void Get_user_online(String url)
+    {
+        idCurrentUser = getActivity().getIntent().getExtras().getInt("idCurrentUser");
+        RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+        CustomRequest request = new CustomRequest(Request.Method.POST, url, null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    JSONArray jsonArray = response.getJSONArray("login");
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        JSONObject jsonObject = jsonArray.getJSONObject(i);
+                        list_user_online.add(jsonObject.getInt("UserID"));
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(getActivity(), "Error." + error.toString(), Toast.LENGTH_SHORT).show();
+                Log.d("response", "" + error.toString());
+            }
+        }) {
+            @Override
+            public String getBodyContentType() {
+                return "application/x-www-form-urlencoded; charset=UTF-8";
+            }
+
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("UserID", String.valueOf(idCurrentUser));
+                return params;
+            }
+        };
+        requestQueue.add(request);
     }
     public void Get_User_Contact(String url)
     {
@@ -110,7 +202,6 @@ public class ContactFragment extends Fragment {
             @Override
             public void onResponse(JSONObject response) {
                 try {
-
                     JSONArray jsonArray = response.getJSONArray("message");
                     for(int i=0;i<jsonArray.length();i++)
                     {
@@ -143,7 +234,6 @@ public class ContactFragment extends Fragment {
         };
         requestQueue.add(request);
     }
-
     public  void GetData(String url,final ArrayList<Integer> sms)
     {
         RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
