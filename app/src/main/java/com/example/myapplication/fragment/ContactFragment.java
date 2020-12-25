@@ -4,6 +4,7 @@ package com.example.myapplication.fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -59,16 +60,27 @@ public class ContactFragment extends Fragment {
     ArrayList<User> userList;
     ListView lvcontact;
     ContactAdapter adapter;
+    private Handler mHandler;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
         View view = inflater.inflate(R.layout.contact_fragment, container, false);
         init(view);
+        this.mHandler = new Handler();
+        m_Runnable.run();
         Get_User_Contact(url_mess);
         Get_user_online(url_user_online);
         return view;
     }
+    private final Runnable m_Runnable = new Runnable()
+    {
+        public void run()
+        {
+            ContactFragment.this.mHandler.postDelayed(m_Runnable, 500);
+        }
 
+    };
     public void init(View view)
     {
         lvcontact = (ListView)view.findViewById(R.id.lv_contact);
@@ -95,6 +107,7 @@ public class ContactFragment extends Fragment {
         //Toast.makeText(getActivity(), String.valueOf(idCurrentUser), Toast.LENGTH_SHORT).show();
         adapter = new ContactAdapter(Listuser,list_user_online, getActivity());
         lvcontact.setAdapter(adapter);
+        //Toast.makeText(getActivity(),String.valueOf(Listuser.size()),Toast.LENGTH_SHORT).show();
         lvcontact.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".activity.WorkActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp">
+        <TextView
+            android:id="@+id/chude"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Cập nhật công việc"
+            android:textAlignment="center"
+            android:textColor="#651674"
+            android:textSize="40dp"
+            android:layout_marginLeft="10dp"/>
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Tên công việc:"
+            android:textColor="#651674"
+            android:textSize="20dp"
+            android:layout_marginLeft="10dp"/>
+        <EditText
+            android:id="@+id/nameworkAC"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:textColor="#651674"
+            android:textSize="20dp"
+            />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Mô tả:"
+            android:textColor="#651674"
+            android:textSize="20dp"
+            android:layout_marginLeft="10dp"/>
+        <EditText
+            android:id="@+id/detailworkAC"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="#651674"
+            android:textSize="20dp"
+            />
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Ngày hoàn thành:"
+            android:textColor="#651674"
+            android:textSize="20dp"
+            android:layout_marginLeft="10dp"/>
+        <DatePicker
+            android:id="@+id/date_work"
+            android:layout_width="wrap_content"
+            android:layout_height="150dp"
+            android:datePickerMode = "spinner"
+            android:calendarViewShown = "false" />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Giờ hoàn thành:"
+            android:textColor="#651674"
+            android:textSize="20dp"
+            android:layout_marginLeft="10dp"/>
+        <TimePicker
+            android:id="@+id/Time_work"
+            android:layout_width="wrap_content"
+            android:layout_height="150dp" />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Đã hoàn thành:"
+            android:textColor="#651674"
+            android:textSize="20dp"
+            android:layout_marginLeft="10dp"/>
+        <CheckBox
+            android:id="@+id/cb_done"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/ic_update"
+            android:layout_marginLeft="30dp"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:gravity="center_horizontal">
+
+        <ImageButton
+            android:id="@+id/img_confirmAC"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/ic_update" />
+
+    </LinearLayout>
+</LinearLayout>

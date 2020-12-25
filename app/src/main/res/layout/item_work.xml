@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <CheckBox
+            android:id="@+id/cb_Work"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginLeft="10dp"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.7"
+            android:text="Công việc các thứ"
+            android:textColor="@color/black"
+            android:id="@+id/tv_nameWork"
+            android:textSize="35dp"/>
+
+        <ImageView
+            android:id="@+id/img_updatework"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:background="@drawable/ic_update"
+            android:visibility="visible"
+            android:tooltipText="Cập nhật"/>
+        <ImageView
+            android:id="@+id/img_deletework"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:background="@drawable/ic_deletework"
+            android:visibility="visible"
+            android:tooltipText="Xoá"/>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tv_detailWork"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:text="Tối đi rình Tuấn cùng người iusssssssssss ssssssssss"
+            android:textColor="@android:color/darker_gray"
+            android:textSize="25dp"/>
+
+        <TextView
+            android:id="@+id/tv_dateWork"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="dd/mm/yyyy gg:pp:ss"
+            android:gravity="right"
+            android:textColor="@android:color/darker_gray"
+            android:layout_marginRight="10dp"
+            android:textSize="15dp"/>
+    </LinearLayout>
+
+</LinearLayout>

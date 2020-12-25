@@ -4,20 +4,22 @@
     android:layout_height="match_parent"
     android:layout_width="match_parent"
     >
+
     <item
-        android:id="@+id/menu1"
-        android:icon="@android:drawable/ic_menu_gallery"
-        android:title="Menu 1"
-        app:showAsAction="ifRoom" />
-    <item
-        android:id="@+id/menu2"
-        android:icon="@android:drawable/ic_lock_lock"
-        android:title="Menu 2"
+        android:id="@+id/menu_assign"
+        android:checkable="false"
+        android:icon="@drawable/ic_assignment"
+        android:title="Menu3"
+        android:tooltipText="Quản lý công việc"
         app:showAsAction="always" />
+
     <item
         android:id="@+id/menu_logout"
         android:checkable="false"
         android:icon="@drawable/ic_logout"
-        android:title="Menu3"
-        app:showAsAction="collapseActionView" />
+        android:title="Menu1"
+        app:showAsAction="always"
+        android:tooltipText="Đăng xuất"/>
+
+
 </menu>

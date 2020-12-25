@@ -1,8 +1,9 @@
 package com.example.myapplication.model;
 
+import java.io.Serializable;
 import java.sql.Date;
 
-public class Message {
+public class Message implements Serializable {
     public int MessageID;
     public  int RoomID;
     public int UserID;

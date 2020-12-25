@@ -56,7 +56,9 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.sql.Date;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -79,8 +81,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     private Toolbar toolbar;
     private LinearLayout layoutIcons,linearLayoutChat;
     private static String textsms;
-    private Handler handler;
-
+    private Handler mHandler;
+    LinearLayoutManager llm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)  {
@@ -92,75 +94,20 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         init();
         initRecyclerView();
         handle();
-        Get_Message(url);
-        //inithandler();
+        this.mHandler = new Handler();
+        m_Runnable.run();
     }
-//    @SuppressLint("ResourceType")
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        getMenuInflater().inflate(R.layout.bt_search_actionbar, menu);
-//        return true;
-//    }
-    private void inithandler() {
-        handler=new Handler()
-        {
-            @Override
-            public void handleMessage(@NonNull android.os.Message msg) {
-                if(msg.what==UserID)
-                {
-                    smss= (ArrayList<Message>) msg.obj;
-                    chatAdapter.notifyDataSetChanged();
-                }
-            }
-        };
-    }
-    public void Update_sms(final ArrayList<Message> smss)
+    private final Runnable m_Runnable = new Runnable()
     {
-        final Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                android.os.Message message = new android.os.Message();
-                message.what=UserID;
-                message.obj=smss;
-                handler.sendMessage(message);
-                try {
-                    Thread.sleep(10000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-        thread.start();
-    }
-    public  ArrayList<Message> getSmss(final JSONObject object) throws JSONException {
-        final Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                android.os.Message message = new android.os.Message();
-                message.what=UserID;
-                try {
-                    smss.add(new Message(
-                            object.getInt("MessageID"),
-                            object.getInt("RoomID"),
-                            object.getInt("UserID"),
-                            object.getInt("ToUserID"),
-                            object.getString("Text"),
-                            object.getString("Time")
-                    ));
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                message.obj=smss;
-                handler.sendMessage(message);
-                try {
-                    Thread.sleep(10000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-        thread.start();
-        return smss;
-    }
+        public void run()
+        {
+            scrollRecycleView();
+            Get_Message(url);
+            chatAdapter.notifyDataSetChanged();
+            ChatActivity.this.mHandler.postDelayed(m_Runnable, 500);
+        }
+
+    };
     private  void SendMessage(String url_send)
     {
         RequestQueue requestQueue = Volley.newRequestQueue(this);
@@ -187,12 +134,14 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 params.put("UserID",String.valueOf(UserID).trim());//UserID
                 params.put("ToUserID",String.valueOf(ToUserID).trim());//ToUserID
                 params.put("RoomID","1");//RoomID
-                params.put("Time", new java.util.Date().toString().trim());//Time
+                Calendar c = Calendar.getInstance();
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                String strDate = sdf.format(c.getTime());
+                params.put("Time", strDate);//Time
                 return params;
             }
         };
         requestQueue.add(jsonArrayRequest);
-        //chatAdapter.notifyDataSetChanged();
         edtEnter.setText("");
     }
     public void Get_Message(String url)
@@ -209,7 +158,6 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                     for(int i=0;i<jsonArray.length();i++)
                     {
                         JSONObject jsonObject = jsonArray.getJSONObject(i);
-                        //Toast.makeText(ChatActivity.this,jsonObject.getString("Text").toString(),Toast.LENGTH_SHORT).show();
                         smss.add(new Message(
                                 jsonObject.getInt("MessageID"),
                                 jsonObject.getInt("RoomID"),
@@ -218,8 +166,6 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                                 jsonObject.getString("Text"),
                                 jsonObject.getString("Time")
                         ));
-                        //Toast.makeText(ChatActivity.this,String.valueOf(smss.size()),Toast.LENGTH_SHORT).show();
-                        chatAdapter.notifyDataSetChanged();
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -252,7 +198,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         smss = new ArrayList<Message>();
         rcv = (RecyclerView)findViewById(R.id.rcv_chat);
         chatAdapter = new ChatAdapter(this,smss,ToUserID,UserID);
-        LinearLayoutManager llm =new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false);
+        llm =new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false);
         llm.setStackFromEnd(true);
         rcv.setLayoutManager(llm);
         rcv.setAdapter(chatAdapter);
@@ -298,11 +244,10 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 if(!edtEnter.getText().toString().equals(""))
                 {
                     textsms = edtEnter.getText().toString().trim();
-                    //Toast.makeText(getApplicationContext(),textsms,Toast.LENGTH_SHORT).show();
                     SendMessage(urlIN);
                 }
                 else {
-                    Toast.makeText(getApplicationContext(),"okok",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(),"Nhập tin nhắn trước khi gửi",Toast.LENGTH_SHORT).show();
                 }
 
             }
@@ -379,27 +324,6 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         edtEnter.setSelection(selectionCursorPos);
     }
 
-   /* @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == 1 && resultCode == RESULT_OK && data != null) {
-            Uri selectedImage = data.getData();
-            InputStream is = null;
-            try {
-                is = getContentResolver().openInputStream(selectedImage);
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
-            Bitmap bitmap = BitmapFactory.decodeStream(is);
-            setPhotoData(bitmap);
-        }
-        if (requestCode == 2 && resultCode == RESULT_OK) {
-            Bitmap selectedImage = (Bitmap)data.getExtras().get("data");
-            setPhotoData(selectedImage);
-        }
-    }*/
-
     public void scrollRecycleView() {
         rcv.postDelayed(new Runnable() {
             @Override
@@ -428,7 +352,6 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             Bitmap selectedImage = (Bitmap)data.getExtras().get("data");
             //setPhotoData(selectedImage);
         }
-
     }
     public static class CustomRequest extends Request<JSONObject> {
 

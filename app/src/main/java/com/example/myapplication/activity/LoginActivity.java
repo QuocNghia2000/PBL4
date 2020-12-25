@@ -55,6 +55,7 @@ public class LoginActivity extends AppCompatActivity {
     public static int UserID;
     String url="http://192.168.1.239:8888/PBL4/Git_PBL4/select_user.php";
     String url_login="http://192.168.1.239:8888/PBL4/Git_PBL4/Insert_login.php";
+    String url_exist="http://192.168.1.239:8888/PBL4/Git_PBL4/user_exist.php";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,6 +76,37 @@ public class LoginActivity extends AppCompatActivity {
         btregister=findViewById(R.id.tv_register);
         listuser=new ArrayList<>();
         cbRemember=findViewById(R.id.cbRemember);
+    }
+    public boolean Get_User_Exist(String url,final int userID)
+    {
+        final boolean[] check = new boolean[1];
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        if(response.trim().equals("Oke"))
+                        {
+                            Toast.makeText(getApplicationContext(),"Tài khoản đã được đăng nhập",Toast.LENGTH_SHORT).show();
+                            check[0] =false;
+                        }
+                        else  check[0] =true;
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(getApplicationContext(),"Xảy ra lỗi",Toast.LENGTH_SHORT).show();
+            }
+        }){
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String ,String> params = new HashMap<>();
+                params.put("UserID",String.valueOf(userID));
+                return params;
+            }
+        };
+        requestQueue.add(stringRequest);
+        return check[0];
     }
     public  void GetData(String url)
     {
@@ -153,13 +185,17 @@ public class LoginActivity extends AppCompatActivity {
                         if(posCurrent(edtuser.getText().toString(),edtpass.getText().toString())!=-1)
                         {
                             int index = posCurrent(edtuser.getText().toString(),edtpass.getText().toString());
-                            Insert_login(url_login,listuser.get(index).userID);
-                            Toast.makeText(getApplicationContext(),"Đăng nhập thành công",Toast.LENGTH_SHORT).show();
-                            Intent gotoMain = new Intent(LoginActivity.this, MainActivity.class);
-                            gotoMain.putExtra("idCurrentUser",listuser.get(index).userID);
-                            gotoMain.putExtra("username",listuser.get(index).username);
-                            gotoMain.putExtra("fullname",listuser.get(index).fullName);
-                            startActivity(gotoMain);
+                            //if(Get_User_Exist(url_exist,listuser.get(index).userID)==true)
+                            {
+                                Insert_login(url_login,listuser.get(index).userID);
+                                Toast.makeText(getApplicationContext(),"Đăng nhập thành công",Toast.LENGTH_SHORT).show();
+                                Intent gotoMain = new Intent(LoginActivity.this, MainActivity.class);
+                                gotoMain.putExtra("idCurrentUser",listuser.get(index).userID);
+                                gotoMain.putExtra("username",listuser.get(index).username);
+                                gotoMain.putExtra("fullname",listuser.get(index).fullName);
+                                //finish();
+                                startActivity(gotoMain);
+                            }
                         }
                         else
                         {

@@ -3,12 +3,10 @@ package com.example.myapplication.activity;
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
-import android.os.Build;
+import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
@@ -16,13 +14,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
-import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.MultiAutoCompleteTextView;
 import android.widget.Toast;
@@ -32,14 +28,13 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.myapplication.R;
 import com.example.myapplication.fragment.ContactFragment;
 import com.example.myapplication.fragment.PersonalFragment;
-import com.example.myapplication.model.Message;
 import com.example.myapplication.model.User;
+import com.example.myapplication.model.Work;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -55,15 +50,16 @@ public class MainActivity extends AppCompatActivity {
     private TabLayout tabLayout;
     public int idcurrentuser;
     public String username;
-    public String pass;
     public String fullname;
     ImageButton img_delete,imgbt_logout;
     MultiAutoCompleteTextView edt_search;
     ArrayList<User> list_user;
     ArrayList<String> listfullname;
+    public ArrayList<Work> listwork,listworkUser;
 
     String url="http://192.168.1.239:8888/PBL4/Git_PBL4/search.php";
     String url_logout="http://192.168.1.239:8888/PBL4/Git_PBL4/user_logout.php";
+    String url_delete_work="http://192.168.1.239:8888/PBL4/Git_PBL4/delete_work.php";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,10 +79,12 @@ public class MainActivity extends AppCompatActivity {
         username=this.getIntent().getExtras().getString("username");
         fullname=this.getIntent().getExtras().getString("fullname");
         img_delete=findViewById(R.id.img_delete);
-        imgbt_logout=findViewById(R.id.imgbt_logout);
         edt_search=findViewById(R.id.edt_search);
         list_user=new ArrayList<>();
         listfullname=new ArrayList<>();
+        listwork=new ArrayList<>();
+        listworkUser = new ArrayList<>();
+
     }
 
     private  void Get_fullname(String url)
@@ -162,6 +160,7 @@ public class MainActivity extends AppCompatActivity {
         };
         requestQueue.add(stringRequest);
     }
+
     private void handle() {
         Get_fullname(url);
         ArrayAdapter adapterSecondLanguage = new ArrayAdapter(this, android.R.layout.simple_list_item_1, listfullname);
@@ -192,29 +191,6 @@ public class MainActivity extends AppCompatActivity {
                 edt_search.setText("");
             }
         });
-        imgbt_logout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                builder.setTitle("Đăng xuất");
-                builder.setMessage("Bạn có chắc chắn muốn đăng xuất");
-                builder.setPositiveButton("Có", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Logout(url_logout);
-                        Intent login = new Intent(MainActivity.this,LoginActivity.class);
-                        startActivity(login);
-                    }
-                });
-                builder.setNegativeButton("Không", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
-                    }
-                });
-                builder.create().show();
-            }
-        });
     }
 
     @SuppressLint("ResourceType")
@@ -222,6 +198,37 @@ public class MainActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.layout.menu_actionbar, menu);
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == R.id.menu_assign)
+        {
+            Intent intent = new Intent(this,WorkActivity.class);
+            intent.putExtra("idCurrentUser",idcurrentuser);
+            startActivity(intent);
+        }
+        if (item.getItemId() == R.id.menu_logout)
+        {
+            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+            builder.setTitle("Đăng xuất");
+            builder.setMessage("Bạn có chắc chắn muốn đăng xuất");
+            builder.setPositiveButton("Có", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    Logout(url_logout);
+                    finish();
+                }
+            });
+            builder.setNegativeButton("Không", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.cancel();
+                }
+            });
+            builder.create().show();
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     public void settupViewpager(ViewPager viewPager) {
