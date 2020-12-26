@@ -48,9 +48,7 @@ import java.util.Map;
 public class MainActivity extends AppCompatActivity {
     private ViewPager viewPager;
     private TabLayout tabLayout;
-    public int idcurrentuser;
-    public String username;
-    public String fullname;
+    public User UserCurrent;
     ImageButton img_delete,imgbt_logout;
     MultiAutoCompleteTextView edt_search;
     ArrayList<User> list_user;
@@ -75,9 +73,7 @@ public class MainActivity extends AppCompatActivity {
         settupViewpager(viewPager);
         tabLayout = (TabLayout)findViewById(R.id.tablayout);
         tabLayout.setupWithViewPager(viewPager);
-        idcurrentuser=this.getIntent().getExtras().getInt("idCurrentUser");
-        username=this.getIntent().getExtras().getString("username");
-        fullname=this.getIntent().getExtras().getString("fullname");
+        UserCurrent = (User) getIntent().getExtras().getSerializable("UserCurrent");
         img_delete=findViewById(R.id.img_delete);
         edt_search=findViewById(R.id.edt_search);
         list_user=new ArrayList<>();
@@ -125,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<String, String>();
-                params.put("UserID",String.valueOf(idcurrentuser));
+                params.put("UserID",String.valueOf(UserCurrent.getUserID()));
                 return params;
             }
         };
@@ -154,7 +150,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String ,String> params = new HashMap<>();
-                params.put("UserID",String.valueOf(idcurrentuser));
+                params.put("UserID",String.valueOf(UserCurrent.getUserID()));
                 return params;
             }
         };
@@ -180,7 +176,7 @@ public class MainActivity extends AppCompatActivity {
                 int pos=listfullname.indexOf(edt);
                 gotochat.putExtra("nameCurrent", list_user.get(pos).fullName);
                 gotochat.putExtra("idUsername", list_user.get(pos).userID);
-                gotochat.putExtra("idCurrentUser", idcurrentuser);
+                gotochat.putExtra("idCurrentUser", UserCurrent.getUserID());
                 //gotochat.putExtra("status",userList.get(position).status);
                 startActivity(gotochat);
             }
@@ -205,7 +201,7 @@ public class MainActivity extends AppCompatActivity {
         if (item.getItemId() == R.id.menu_assign)
         {
             Intent intent = new Intent(this,WorkActivity.class);
-            intent.putExtra("idCurrentUser",idcurrentuser);
+            intent.putExtra("idCurrentUser",UserCurrent.getUserID());
             startActivity(intent);
         }
         if (item.getItemId() == R.id.menu_logout)

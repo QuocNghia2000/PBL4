@@ -21,19 +21,17 @@ import com.android.volley.toolbox.Volley;
 import com.example.myapplication.R;
 import com.example.myapplication.activity.LoginActivity;
 import com.example.myapplication.activity.RegisterActivity;
+import com.example.myapplication.model.User;
 
 import java.util.HashMap;
 import java.util.Map;
 
 
 public class PersonalFragment extends Fragment {
-    public String username;
-    public String pass;
-    public String fullname;
     public TextView edtusername;
     public EditText edtpass,edtconfirm_pass,edtfullname;
     public ImageButton update;
-    public int idcurrent;
+    public User UserCurrent;
     String url="http://192.168.1.239:8888/PBL4/Git_PBL4/update_user.php";
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -91,7 +89,7 @@ public class PersonalFragment extends Fragment {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String ,String> params = new HashMap<>();
-                params.put("UserID",String.valueOf(idcurrent));
+                params.put("UserID",String.valueOf(UserCurrent.getUserID()));
                 params.put("password",edtpass.getText().toString().trim());
                 params.put("fullname",edtfullname.getText().toString().trim());
                 return params;
@@ -102,16 +100,14 @@ public class PersonalFragment extends Fragment {
     }
 
     private void init(View view) {
-        idcurrent=getActivity().getIntent().getExtras().getInt("idCurrentUser");;
-        username = getActivity().getIntent().getExtras().getString("username");
-        fullname = getActivity().getIntent().getExtras().getString("fullname");
+        UserCurrent = (User) getActivity().getIntent().getExtras().getSerializable("UserCurrent");
         edtusername=(TextView)view.findViewById(R.id.username);
         edtpass=(EditText)view.findViewById(R.id.pass);
         edtconfirm_pass=(EditText)view.findViewById(R.id.confirm_pass);
         edtfullname=(EditText)view.findViewById(R.id.fullname);
         update=(ImageButton) view.findViewById(R.id.update);
-        edtusername.setText(username);
-        edtfullname.setText(fullname);
+        edtusername.setText(UserCurrent.getUsername());
+        edtfullname.setText(UserCurrent.getFullName());
     }
 
 }

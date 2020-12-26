@@ -69,7 +69,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     public static int ToUserID,UserID;
     private String url="http://192.168.1.239:8888/PBL4/Git_PBL4/select_message.php";
     private String url_sms="http://192.168.1.239:8888/PBL4/Git_PBL4/insert_message.php";
-    ListView listView;
+    String url_count="http://192.168.1.239:8888/PBL4/Git_PBL4/count.php";
     private static ArrayList<Message> smss;
     private EditText edtEnter;
     private ImageView imvSend,imvIcons,imvPicture,imvCamera;
@@ -78,14 +78,14 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     private List<String> iconList;
     private RecyclerView rcv;
     private TextView nameClient;
-    private Date timeSend;
     private ChatAdapter chatAdapter;
-    private Toolbar toolbar;
     private LinearLayout layoutIcons,linearLayoutChat;
     private static String textsms;
     private Handler mHandler;
     LinearLayoutManager llm;
     Message imgcurrent;
+    boolean check=false;
+    int count=0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)  {
@@ -93,25 +93,25 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.chat_layout);
         UserID=this.getIntent().getExtras().getInt("idCurrentUser");
         ToUserID = this.getIntent().getExtras().getInt("idUsername");
-        Get_Message(url);
         init();
         initRecyclerView();
         handle();
-
-        //this.mHandler = new Handler();
-        //m_Runnable.run();
+        this.mHandler = new Handler();
+        m_Runnable.run();
     }
-//    private final Runnable m_Runnable = new Runnable()
-//    {
-//        public void run()
-//        {
-//            scrollRecycleView();
-//            Get_Message(url);
-//            chatAdapter.notifyDataSetChanged();
-//            ChatActivity.this.mHandler.postDelayed(m_Runnable, 2000);
-//        }
-//
-//    };
+    private final Runnable m_Runnable = new Runnable()
+    {
+        public void run()
+        {
+            Get_Message(url);
+            chatAdapter.notifyDataSetChanged();
+            if(check)
+            {
+                scrollRecycleView();
+            }
+            ChatActivity.this.mHandler.postDelayed(m_Runnable, 1000);
+        }
+    };
     private  void SendMessage(String url_send)
     {
         RequestQueue requestQueue = Volley.newRequestQueue(this);
@@ -123,7 +123,10 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                        {
                            Toast.makeText(ChatActivity.this,"Không thể gửi tin nhắn",Toast.LENGTH_SHORT).show();
                        }
-                       else  Get_Message(url);
+                       else
+                       {
+                           Get_Message(url);
+                       }
                     }
                 }, new Response.ErrorListener() {
             @Override
@@ -175,6 +178,12 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                         ));
                         //Toast.makeText(ChatActivity.this,String.valueOf(smss.size()),Toast.LENGTH_SHORT).show();
                     }
+                    if(count!=jsonArray.length())
+                    {
+                        check=true;
+                        count=jsonArray.length();
+                    }
+                    else check=false;
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -207,9 +216,9 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         rcv = (RecyclerView)findViewById(R.id.rcv_chat);
         chatAdapter = new ChatAdapter(this,smss,ToUserID,UserID);
         llm =new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false);
-        llm.setStackFromEnd(true);
         rcv.setLayoutManager(llm);
         rcv.setAdapter(chatAdapter);
+        llm.setStackFromEnd(true);
     }
 
     public void init() {
@@ -235,7 +244,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         imvSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                scrollRecycleView();
+                //scrollRecycleView();
                 if(!edtEnter.getText().toString().equals(""))
                 {
                     textsms = edtEnter.getText().toString().trim();

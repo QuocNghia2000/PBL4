@@ -48,7 +48,12 @@ public class WorkActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_work);
         init();
+    }
+
+    @Override
+    protected void onStart() {
         Get_work();
+        super.onStart();
     }
 
     private void init()
@@ -62,28 +67,6 @@ public class WorkActivity extends AppCompatActivity {
         datePicker=findViewById(R.id.date_work);
         img_deletework=findViewById(R.id.img_deletework);
     }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK && requestCode == 9)
-        {
-            if (data.getExtras().getString("congviec").equals("complete"))
-            {
-                Get_work();
-                adapterWork.notifyDataSetChanged();
-            }
-        }
-        if (resultCode == RESULT_OK && requestCode == 10)
-        {
-            if (data.getExtras().getString("congviec").equals("complete"))
-            {
-                Get_work();
-                adapterWork.notifyDataSetChanged();
-            }
-        }
-    }
-
     public ArrayList<Work> Get_work()
     {
         RequestQueue requestQueue = Volley.newRequestQueue(this);
@@ -107,6 +90,7 @@ public class WorkActivity extends AppCompatActivity {
                                 ));
                             }
                             handle(listwork);
+                            adapterWork.notifyDataSetChanged();
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -188,8 +172,7 @@ public class WorkActivity extends AppCompatActivity {
                 Intent intent = new Intent(getApplicationContext(), AddWorkActivity.class);
                 intent.putExtra("idCurrentUser",idCurrentUser);
                 intent.putExtra("inf","add");
-                int Request_code=9;
-                startActivityForResult(intent,Request_code);
+                startActivity(intent);
             }
         });
     }

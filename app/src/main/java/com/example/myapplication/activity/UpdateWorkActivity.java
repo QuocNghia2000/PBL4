@@ -51,14 +51,6 @@ public class UpdateWorkActivity extends AppCompatActivity {
             }
         });
     }
-    @Override
-    public void finish() {
-        Intent data = new Intent();
-        data.putExtra("congviec","complete");
-        setResult(RESULT_OK,data);
-        super.finish();
-    }
-
     private void init() {
         name = (EditText)findViewById(R.id.nameworkAC);
         detail = (EditText)findViewById(R.id.detailworkAC);

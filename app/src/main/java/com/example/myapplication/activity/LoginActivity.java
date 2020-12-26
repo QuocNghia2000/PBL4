@@ -190,10 +190,7 @@ public class LoginActivity extends AppCompatActivity {
                                 Insert_login(url_login,listuser.get(index).userID);
                                 Toast.makeText(getApplicationContext(),"Đăng nhập thành công",Toast.LENGTH_SHORT).show();
                                 Intent gotoMain = new Intent(LoginActivity.this, MainActivity.class);
-                                gotoMain.putExtra("idCurrentUser",listuser.get(index).userID);
-                                gotoMain.putExtra("username",listuser.get(index).username);
-                                gotoMain.putExtra("fullname",listuser.get(index).fullName);
-                                //finish();
+                                gotoMain.putExtra("UserCurrent",listuser.get(index));
                                 startActivity(gotoMain);
                             }
                         }

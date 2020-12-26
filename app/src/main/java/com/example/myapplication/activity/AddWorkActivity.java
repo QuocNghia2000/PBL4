@@ -71,13 +71,6 @@ public class AddWorkActivity extends AppCompatActivity {
             }
         });
     }
-    @Override
-    public void finish() {
-        Intent data = new Intent();
-        data.putExtra("congviec","complete");
-        setResult(RESULT_OK,data);
-        super.finish();
-    }
     public void Update_work()
     {
         RequestQueue requestQueue = Volley.newRequestQueue(this);
