@@ -61,7 +61,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int position) {
         Message message = sms.get(position);
         if (message != null) {
-            if (message.getUserID()==UserID && message.getToUserID()==ToUserID ) {
+            if (message.getUserID()==UserID && message.getToUserID()==ToUserID && message.IsImage()!=1 ) {
                 viewHolder.tvSend.setText(message.getText());
                 for (ChatAdapter.Icons value: iconList)
                 {
@@ -79,7 +79,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
                 }
                 viewHolder.tvSend.setVisibility(View.VISIBLE);
                 viewHolder.tvReceive.setVisibility(View.GONE);
-            } else if (message.getUserID()==ToUserID && message.getToUserID()==UserID ) {
+            } else if (message.getUserID()==ToUserID && message.getToUserID()==UserID && message.IsImage()!=1) {
                 viewHolder.tvReceive.setText(message.getText());
                 for (ChatAdapter.Icons value: iconList)
                 {
@@ -97,15 +97,14 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
                 }
                 viewHolder.tvSend.setVisibility(View.GONE);
                 viewHolder.tvReceive.setVisibility(View.VISIBLE);
-            } else if (message.getUserID()==new LoginActivity().UserID && message.getToUserID()==new ChatActivity().ToUserID /*&& message.isPhoto()*/) {
+            } else if (message.getUserID()==UserID && message.getToUserID()==ToUserID && message.IsImage()==1) {
                 viewHolder.imvSend.setImageBitmap(convertStringToBitmap(message.getText()));
                 viewHolder.imvSend.setVisibility(View.VISIBLE);
                 viewHolder.imvReceive.setVisibility(View.GONE);
-            } else if (message.getToUserID()==new LoginActivity().UserID && message.getUserID()==new ChatActivity().ToUserID /*&& message.isPhoto()*/) {
+            } else if (message.getToUserID()==UserID && message.getUserID()==ToUserID && message.IsImage()==1) {
                 viewHolder.imvReceive.setImageBitmap(convertStringToBitmap(message.getText()));
                 viewHolder.imvSend.setVisibility(View.GONE);
                 viewHolder.imvReceive.setVisibility(View.VISIBLE);
-
             } else{
                 viewHolder.tvSend.setVisibility(View.GONE);
                 viewHolder.tvReceive.setVisibility(View.GONE);
@@ -119,6 +118,13 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
     @Override
     public int getItemCount() {
         return sms.size();
+    }
+
+    public static  Bitmap ConvertByteToBitmap(String bytebitmap)
+    {
+        byte[] bytes=bytebitmap.getBytes();
+        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+        return bitmap;
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {

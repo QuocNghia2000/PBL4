@@ -19,10 +19,11 @@
                 android:id="@+id/chude"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Cập nhật công việc"
+                android:text="Quản lý công việc"
                 android:textAlignment="center"
                 android:textColor="#651674"
-                android:textSize="40dp" />
+                android:textSize="40dp"
+                android:layout_marginLeft="30dp"/>
 
         </LinearLayout>
         <ImageView

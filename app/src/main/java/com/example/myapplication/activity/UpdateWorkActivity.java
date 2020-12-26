@@ -74,7 +74,7 @@ public class UpdateWorkActivity extends AppCompatActivity {
         int Hour=Integer.valueOf(work.getTime().substring(11,13));
         int Minute=Integer.valueOf(work.getTime().substring(14,16));
         timePicker.setCurrentHour(Hour); timePicker.setCurrentMinute(Minute);
-        datePicker.updateDate(year,month,date);
+        datePicker.updateDate(year,month-1,date);
         if(work.isStatus()==1) cb_done.setChecked(true);
         else cb_done.setChecked(false);
         timePicker.setIs24HourView(true);

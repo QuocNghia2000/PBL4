@@ -1,5 +1,7 @@
 package com.example.myapplication.model;
 
+import android.graphics.Bitmap;
+
 import java.io.Serializable;
 import java.sql.Date;
 
@@ -9,23 +11,41 @@ public class Message implements Serializable {
     public int UserID;
     public int ToUserID;
     public String Text;
+    public Bitmap image;
     public String Time;
+    public int IsImage;
 
-    public Message(int _MessageID,int _RoomID,int _UserID, int _ToUserID,String _Text,String _Time)
+    public Message(int _MessageID,int _RoomID,int _UserID, int _ToUserID,String _Text,String _Time,int image)
     {
         this.MessageID=_MessageID;
         this.RoomID=_RoomID;
         this.UserID=_UserID;
         this.ToUserID=_ToUserID;
         this.Text=_Text;
+        //this.image=image;
         this.Time=_Time;
+        this.IsImage=image;
     }
 
+    public Message(int UserID,int ToUserID,String image,String time)
+    {
+        this.UserID=UserID;
+        this.ToUserID=ToUserID;
+        this.Text=image;
+        this.Time=time;
+    }
     public Message(int _UserID, int _ToUserID,String _Text)
     {
         this.UserID=_UserID;
         this.ToUserID=_ToUserID;
         this.Text=_Text;
+    }
+
+    public Bitmap getImage() {
+        return image;
+    }
+    public void setImage(Bitmap image) {
+        this.image = image;
     }
 
     public int getMessageID() {
@@ -75,4 +95,6 @@ public class Message implements Serializable {
     public void setTime(String time) {
         Time = time;
     }
+
+    public int IsImage() { return IsImage;}
 }

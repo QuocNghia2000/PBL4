@@ -20,6 +20,7 @@ import android.support.v7.widget.Toolbar;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.ImageSpan;
+import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
@@ -52,6 +53,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -66,7 +68,7 @@ import java.util.Map;
 public class ChatActivity extends AppCompatActivity implements View.OnClickListener{
     public static int ToUserID,UserID;
     private String url="http://192.168.1.239:8888/PBL4/Git_PBL4/select_message.php";
-    private String urlIN="http://192.168.1.239:8888/PBL4/Git_PBL4/insert_message.php";
+    private String url_sms="http://192.168.1.239:8888/PBL4/Git_PBL4/insert_message.php";
     ListView listView;
     private static ArrayList<Message> smss;
     private EditText edtEnter;
@@ -83,31 +85,33 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     private static String textsms;
     private Handler mHandler;
     LinearLayoutManager llm;
+    Message imgcurrent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)  {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.chat_layout);
-        //Toast.makeText(this,new java.util.Date().toString(),Toast.LENGTH_SHORT).show();
         UserID=this.getIntent().getExtras().getInt("idCurrentUser");
         ToUserID = this.getIntent().getExtras().getInt("idUsername");
+        Get_Message(url);
         init();
         initRecyclerView();
         handle();
-        this.mHandler = new Handler();
-        m_Runnable.run();
-    }
-    private final Runnable m_Runnable = new Runnable()
-    {
-        public void run()
-        {
-            scrollRecycleView();
-            Get_Message(url);
-            chatAdapter.notifyDataSetChanged();
-            ChatActivity.this.mHandler.postDelayed(m_Runnable, 500);
-        }
 
-    };
+        //this.mHandler = new Handler();
+        //m_Runnable.run();
+    }
+//    private final Runnable m_Runnable = new Runnable()
+//    {
+//        public void run()
+//        {
+//            scrollRecycleView();
+//            Get_Message(url);
+//            chatAdapter.notifyDataSetChanged();
+//            ChatActivity.this.mHandler.postDelayed(m_Runnable, 2000);
+//        }
+//
+//    };
     private  void SendMessage(String url_send)
     {
         RequestQueue requestQueue = Volley.newRequestQueue(this);
@@ -138,6 +142,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 String strDate = sdf.format(c.getTime());
                 params.put("Time", strDate);//Time
+                params.put("IsImage","0");//IsImage
                 return params;
             }
         };
@@ -155,6 +160,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 smss.clear();
                 try {
                     JSONArray jsonArray= response.getJSONArray("message");
+                    //Toast.makeText(ChatActivity.this,String.valueOf(jsonArray.length()),Toast.LENGTH_SHORT).show();
                     for(int i=0;i<jsonArray.length();i++)
                     {
                         JSONObject jsonObject = jsonArray.getJSONObject(i);
@@ -164,8 +170,10 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                                 jsonObject.getInt("UserID"),
                                 jsonObject.getInt("ToUserID"),
                                 jsonObject.getString("Text"),
-                                jsonObject.getString("Time")
+                                jsonObject.getString("Time"),
+                                jsonObject.getInt("IsImage")
                         ));
+                        //Toast.makeText(ChatActivity.this,String.valueOf(smss.size()),Toast.LENGTH_SHORT).show();
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -220,23 +228,10 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         }
 
         nameClient.setText(this.getIntent().getExtras().getString("nameCurrent"));
-       /* Intent intent = getIntent();
-        clientId = intent.getStringExtra("clientId");
-        currentId = intent.getStringExtra("currentId");
-        curentName = intent.getStringExtra("currentName");
-        clientName = intent.getStringExtra("nameClient");
-        nameClient.setText(intent.getStringExtra("nameClient"));*/
     }
 
     public void handle()
     {
-        imvCamera.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent takePicture = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                startActivityForResult(takePicture,2);
-            }
-        });
         imvSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -244,7 +239,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 if(!edtEnter.getText().toString().equals(""))
                 {
                     textsms = edtEnter.getText().toString().trim();
-                    SendMessage(urlIN);
+                    SendMessage(url_sms);
                 }
                 else {
                     Toast.makeText(getApplicationContext(),"Nhập tin nhắn trước khi gửi",Toast.LENGTH_SHORT).show();
@@ -260,6 +255,13 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
 
+        imvCamera.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent takePicture = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                startActivityForResult(takePicture,2);
+            }
+        });
         imvPicture.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -346,12 +348,75 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 e.printStackTrace();
             }
             Bitmap bitmap = BitmapFactory.decodeStream(is);
-            //setPhotoData(bitmap);
+            setPhotoData(bitmap);
+            Toast.makeText(getApplicationContext(),bitmap.toString(),Toast.LENGTH_SHORT).show();
         }
         if (requestCode == 2 && resultCode == RESULT_OK) {
             Bitmap selectedImage = (Bitmap)data.getExtras().get("data");
-            //setPhotoData(selectedImage);
+            setPhotoData(selectedImage);
         }
+    }
+    public void setPhotoData(Bitmap bm){
+        //lấy thời gian hiện tại
+        Calendar c = Calendar.getInstance();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String strDate = sdf.format(c.getTime());
+        imgcurrent = new Message(UserID, ToUserID,getBitmapToByte(bm),strDate);
+        SendImage(getBitmapToByte(bm));
+        Get_Message(url);
+        chatAdapter.notifyDataSetChanged();
+        //Toast.makeText(getApplicationContext(),getBitmapToByte(bm).length(),Toast.LENGTH_SHORT).show();
+        //imgcurrent.setPhoto(true);
+        //mFirebaseRef.child("Messages").child(timeSend.toString()).setValue(valueCurrent);//đẩy lên DB
+    }
+    public void SendImage(final String bitmap)
+    {
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        StringRequest jsonArrayRequest = new StringRequest(Request.Method.POST, url_sms,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        if(response.trim().equals("Fail"))
+                        {
+                            Toast.makeText(ChatActivity.this,"Không thể gửi hình ảnh",Toast.LENGTH_SHORT).show();
+                        }
+                        //else  Get_Message(url);
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(ChatActivity.this,"Error",Toast.LENGTH_SHORT).show();
+            }
+        }){
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String ,String> params = new HashMap<>();
+                params.put("Text",bitmap);//Text
+                params.put("UserID",String.valueOf(UserID).trim());//UserID
+                params.put("ToUserID",String.valueOf(ToUserID).trim());//ToUserID
+                params.put("RoomID","1");//RoomID
+                Calendar c = Calendar.getInstance();
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                String strDate = sdf.format(c.getTime());
+                params.put("Time", strDate);//Time
+                params.put("IsImage","1");//IsImage
+                return params;
+            }
+        };
+        requestQueue.add(jsonArrayRequest);
+        edtEnter.setText("");
+    }
+    public static String getBitmapToByte(Bitmap bitmap) {
+        String encoded = null;
+        try {
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
+            byte[] byteArray = byteArrayOutputStream .toByteArray();
+            encoded = Base64.encodeToString(byteArray, Base64.DEFAULT);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return encoded;
     }
     public static class CustomRequest extends Request<JSONObject> {
 
