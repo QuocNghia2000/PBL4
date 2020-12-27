@@ -122,94 +122,99 @@ public class ContactFragment extends Fragment {
             }
         });
     }
-
     public void Get_user_online(String url)
     {
-        UserCurrent = (User) getActivity().getIntent().getExtras().getSerializable("UserCurrent");
-        RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
-        CustomRequest request = new CustomRequest(Request.Method.POST, url, null, new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                try {
-                    JSONArray jsonArray = response.getJSONArray("login");
-                    for (int i = 0; i < jsonArray.length(); i++) {
-                        JSONObject jsonObject = jsonArray.getJSONObject(i);
-                        list_user_online.add(jsonObject.getInt("UserID"));
+        if(getActivity()!=null)
+        {
+            UserCurrent = (User) getActivity().getIntent().getExtras().getSerializable("UserCurrent");
+            RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+            CustomRequest request = new CustomRequest(Request.Method.POST, url, null, new Response.Listener<JSONObject>() {
+                @Override
+                public void onResponse(JSONObject response) {
+                    try {
+                        JSONArray jsonArray = response.getJSONArray("login");
+                        for (int i = 0; i < jsonArray.length(); i++) {
+                            JSONObject jsonObject = jsonArray.getJSONObject(i);
+                            list_user_online.add(jsonObject.getInt("UserID"));
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
                     }
-                } catch (JSONException e) {
-                    e.printStackTrace();
                 }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Toast.makeText(getActivity(), "Error." + error.toString(), Toast.LENGTH_SHORT).show();
-                Log.d("response", "" + error.toString());
-            }
-        }) {
-            @Override
-            public String getBodyContentType() {
-                return "application/x-www-form-urlencoded; charset=UTF-8";
-            }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Toast.makeText(getActivity(), "Error." + error.toString(), Toast.LENGTH_SHORT).show();
+                    Log.d("response", "" + error.toString());
+                }
+            }) {
+                @Override
+                public String getBodyContentType() {
+                    return "application/x-www-form-urlencoded; charset=UTF-8";
+                }
 
-            @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String, String> params = new HashMap<String, String>();
-                params.put("UserID", String.valueOf(UserCurrent.getUserID()));
-                return params;
-            }
-        };
-        requestQueue.add(request);
+                @Override
+                protected Map<String, String> getParams() throws AuthFailureError {
+                    Map<String, String> params = new HashMap<String, String>();
+                    params.put("UserID", String.valueOf(UserCurrent.getUserID()));
+                    return params;
+                }
+            };
+            requestQueue.add(request);
+        }
+
     }
     public void Get_User_Contact(String url)
     {
-        //idCurrentUser = getActivity().getIntent().getExtras().getInt("idCurrentUser");
-        RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
-        CustomRequest request = new CustomRequest(Request.Method.POST, url, null, new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                sms.clear();
-                try {
-                    JSONArray jsonArray = response.getJSONArray("message");
-                    for(int i=0;i<jsonArray.length();i++)
-                    {
-                        JSONObject jsonObject = jsonArray.getJSONObject(i);
-                        sms.add(jsonObject.getInt("ToUserID"));
+        if(getActivity()!=null)
+        {
+            RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+            CustomRequest request = new CustomRequest(Request.Method.POST, url, null, new Response.Listener<JSONObject>() {
+                @Override
+                public void onResponse(JSONObject response) {
+                    sms.clear();
+                    try {
+                        JSONArray jsonArray = response.getJSONArray("message");
+                        for(int i=0;i<jsonArray.length();i++)
+                        {
+                            JSONObject jsonObject = jsonArray.getJSONObject(i);
+                            sms.add(jsonObject.getInt("ToUserID"));
+                        }
+                        if(count!=jsonArray.length())
+                        {
+                            check=true;
+                            count=jsonArray.length();
+                        }
+                        else check=false;
+                        if(check)
+                        {
+                            GetData(url_user);
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
                     }
-                    if(count!=jsonArray.length())
-                    {
-                        check=true;
-                        count=jsonArray.length();
-                    }
-                    else check=false;
-                    if(check)
-                    {
-                        GetData(url_user);
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
                 }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Toast.makeText(getActivity(), "Error."+error.toString(), Toast.LENGTH_SHORT).show();
-                Log.d("response",""+error.toString());
-            }
-        }) {
-            @Override
-            public String getBodyContentType() {
-                return "application/x-www-form-urlencoded; charset=UTF-8";
-            }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Toast.makeText(getActivity(), "Error."+error.toString(), Toast.LENGTH_SHORT).show();
+                    Log.d("response",""+error.toString());
+                }
+            }) {
+                @Override
+                public String getBodyContentType() {
+                    return "application/x-www-form-urlencoded; charset=UTF-8";
+                }
 
-            @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String, String> params = new HashMap<String, String>();
-                params.put("UserID",String.valueOf(UserCurrent.getUserID()));
-                return params;
-            }
-        };
-        requestQueue.add(request);
+                @Override
+                protected Map<String, String> getParams() throws AuthFailureError {
+                    Map<String, String> params = new HashMap<String, String>();
+                    params.put("UserID",String.valueOf(UserCurrent.getUserID()));
+                    return params;
+                }
+            };
+            requestQueue.add(request);
+        }
     }
     public  void GetData(String url)
     {

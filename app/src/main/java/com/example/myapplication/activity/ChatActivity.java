@@ -23,6 +23,7 @@ import android.text.style.ImageSpan;
 import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -481,6 +482,19 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             listener.onResponse(response);
         }
     }
-
+    @SuppressLint("ResourceType")
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.layout.menu_back, menu);
+        return true;
+    }
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == R.id.menu_back)
+        {
+            finish();
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
 }

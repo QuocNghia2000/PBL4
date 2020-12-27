@@ -189,6 +189,12 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    public void finish() {
+        Logout(url_logout);
+        super.finish();
+    }
+
     @SuppressLint("ResourceType")
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -204,6 +210,10 @@ public class MainActivity extends AppCompatActivity {
             intent.putExtra("idCurrentUser",UserCurrent.getUserID());
             startActivity(intent);
         }
+        if (item.getItemId() == R.id.menu_back)
+        {
+            finish();
+        }
         if (item.getItemId() == R.id.menu_logout)
         {
             AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
@@ -212,7 +222,6 @@ public class MainActivity extends AppCompatActivity {
             builder.setPositiveButton("Có", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    Logout(url_logout);
                     finish();
                 }
             });
