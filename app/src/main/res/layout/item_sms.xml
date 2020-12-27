@@ -6,43 +6,43 @@
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:gravity="center"
         android:padding="5dp">
         <TextView
             android:id="@+id/sms_send"
-            android:layout_width="wrap_content"
+            android:layout_width="196dp"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
+            android:visibility="visible"
+            android:layout_centerVertical="true"
             android:textColor="#000"
+            android:gravity="center"
             android:textSize="20dp"
-            android:background="@drawable/boder_sms_send"/>
+            android:background="@drawable/icon_user2"/>
+
         <ImageView
+            android:id="@+id/img_send"
             android:layout_width="150dp"
             android:layout_height="150dp"
-            android:id="@+id/img_send"
             android:layout_alignParentRight="true"
-            android:visibility="invisible"
-            android:background="#000"/>
-    </RelativeLayout>
-    <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="5dp"
-        android:layout_marginTop="20dp">
+            android:layout_marginRight="10dp"
+            android:visibility="gone" />
 
         <TextView
             android:id="@+id/sms_receive"
-            android:layout_width="wrap_content"
+            android:layout_width="196dp"
             android:layout_height="wrap_content"
+            android:visibility="visible"
             android:textColor="#000"
+            android:gravity="center"
             android:textSize="20dp"
-            android:background="@drawable/boder_sms_receive"
+            android:background="@drawable/icon_touser2"
             />
+
         <ImageView
+            android:id="@+id/img_recieve"
             android:layout_width="150dp"
             android:layout_height="150dp"
-            android:id="@+id/img_recieve"
-            android:visibility="invisible"
-            android:background="#000"
-            />
+            android:visibility="gone" />
     </RelativeLayout>
 </RelativeLayout>

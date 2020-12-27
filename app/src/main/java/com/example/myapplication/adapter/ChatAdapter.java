@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.myapplication.R;
 import com.example.myapplication.activity.ChatActivity;
@@ -59,60 +60,64 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int position) {
+
         Message message = sms.get(position);
         if (message != null) {
-            if (message.getUserID()==UserID && message.getToUserID()==ToUserID && message.IsImage()!=1 ) {
+            if (message.getUserID() == UserID && message.getToUserID() == ToUserID && message.IsImage() != 1) {
                 viewHolder.tvSend.setText(message.getText());
-                for (ChatAdapter.Icons value: iconList)
-                {
+                for (ChatAdapter.Icons value : iconList) {
                     String st = sms.get(position).Text;
                     int index = st.indexOf(value.sign);
-                    while (index!=-1)
-                    {
+                    while (index != -1) {
                         SpannableStringBuilder builder = new SpannableStringBuilder(viewHolder.tvSend.getText());
                         Drawable d = this.mContext.getResources().getDrawable(value.id);
                         d.setBounds(0, 0, d.getIntrinsicWidth(), d.getIntrinsicHeight());
                         builder.setSpan(new ImageSpan(d), index, index + value.sign.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                         viewHolder.tvSend.setText(builder);
-                        index = st.indexOf(value.sign,index+ value.sign.length());
+                        index = st.indexOf(value.sign, index + value.sign.length());
                     }
                 }
                 viewHolder.tvSend.setVisibility(View.VISIBLE);
-                viewHolder.tvReceive.setVisibility(View.GONE);
-            } else if (message.getUserID()==ToUserID && message.getToUserID()==UserID && message.IsImage()!=1) {
+                viewHolder.tvReceive.setVisibility(View.INVISIBLE);
+                viewHolder.imvReceive.setVisibility(View.GONE);
+                viewHolder.imvSend.setVisibility(View.GONE);
+            } else if (message.getUserID() == ToUserID && message.getToUserID() == UserID && message.IsImage() != 1) {
                 viewHolder.tvReceive.setText(message.getText());
-                for (ChatAdapter.Icons value: iconList)
-                {
+                for (ChatAdapter.Icons value : iconList) {
                     String st = sms.get(position).Text;
                     int index = st.indexOf(value.sign);
-                    while (index!=-1)
-                    {
+                    while (index != -1) {
                         SpannableStringBuilder builder = new SpannableStringBuilder(viewHolder.tvReceive.getText());
                         Drawable d = this.mContext.getResources().getDrawable(value.id);
                         d.setBounds(0, 0, d.getIntrinsicWidth(), d.getIntrinsicHeight());
                         builder.setSpan(new ImageSpan(d), index, index + value.sign.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                         viewHolder.tvReceive.setText(builder);
-                        index = st.indexOf(value.sign,index+ value.sign.length());
+                        index = st.indexOf(value.sign, index + value.sign.length());
                     }
                 }
-                viewHolder.tvSend.setVisibility(View.GONE);
+                viewHolder.tvSend.setVisibility(View.INVISIBLE);
                 viewHolder.tvReceive.setVisibility(View.VISIBLE);
-            } else if (message.getUserID()==UserID && message.getToUserID()==ToUserID && message.IsImage()==1) {
-                viewHolder.imvSend.setImageBitmap(convertStringToBitmap(message.getText()));
+                viewHolder.imvReceive.setVisibility(View.GONE);
+                viewHolder.imvSend.setVisibility(View.GONE);
+            } else if (message.getToUserID() == ToUserID && message.getUserID() == UserID && message.IsImage() == 1) {
+                viewHolder.imvSend.setImageBitmap(message.getImage());
                 viewHolder.imvSend.setVisibility(View.VISIBLE);
-                viewHolder.imvReceive.setVisibility(View.GONE);
-            } else if (message.getToUserID()==UserID && message.getUserID()==ToUserID && message.IsImage()==1) {
-                viewHolder.imvReceive.setImageBitmap(convertStringToBitmap(message.getText()));
-                viewHolder.imvSend.setVisibility(View.GONE);
+                viewHolder.tvSend.setVisibility(View.INVISIBLE);
+                viewHolder.tvReceive.setVisibility(View.INVISIBLE);
+                viewHolder.imvReceive.setVisibility(View.INVISIBLE);
+            } else if (message.getToUserID() == UserID && message.getUserID() == ToUserID && message.IsImage() == 1) {
+                viewHolder.imvReceive.setImageBitmap(message.getImage());
                 viewHolder.imvReceive.setVisibility(View.VISIBLE);
-            } else{
-                viewHolder.tvSend.setVisibility(View.GONE);
-                viewHolder.tvReceive.setVisibility(View.GONE);
-                viewHolder.imvSend.setVisibility(View.GONE);
-                viewHolder.imvReceive.setVisibility(View.GONE);
+                viewHolder.tvSend.setVisibility(View.INVISIBLE);
+                viewHolder.tvReceive.setVisibility(View.INVISIBLE);
+                viewHolder.imvSend.setVisibility(View.INVISIBLE);
+            } else {
+                viewHolder.tvSend.setVisibility(View.INVISIBLE);
+                viewHolder.tvReceive.setVisibility(View.INVISIBLE);
+                viewHolder.imvSend.setVisibility(View.INVISIBLE);
+                viewHolder.imvReceive.setVisibility(View.INVISIBLE);
             }
         }
-
     }
 
     @Override
@@ -139,12 +144,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
             tvReceive = (TextView) itemView.findViewById(R.id.sms_receive);
             imvSend = (ImageView) itemView.findViewById(R.id.img_send);
             imvReceive = (ImageView) itemView.findViewById(R.id.img_recieve);
-
         }
-    }
-    private Bitmap convertStringToBitmap(String s) {
-        byte[] manghinh = Base64.decode(s, Base64.DEFAULT);
-        return BitmapFactory.decodeByteArray(manghinh, 0, manghinh.length);
     }
 
     public void getIcons()

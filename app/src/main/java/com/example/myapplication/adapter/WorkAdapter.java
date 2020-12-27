@@ -56,7 +56,7 @@ public class WorkAdapter extends BaseAdapter {
             holder.name = (TextView) convertView.findViewById(R.id.tv_nameWork);
             holder.detail = (TextView) convertView.findViewById(R.id.tv_detailWork);
             holder.date = (TextView) convertView.findViewById(R.id.tv_dateWork);
-            holder.status = (CheckBox) convertView.findViewById(R.id.cb_Work);
+            holder.img_compltete=(ImageView) convertView.findViewById(R.id.ic_complete);
             holder.img_deletework=(ImageView) convertView.findViewById(R.id.img_deletework);
             holder.img_update=(ImageView) convertView.findViewById(R.id.img_updatework);
             final View finalConvertView = convertView;
@@ -82,8 +82,7 @@ public class WorkAdapter extends BaseAdapter {
         holder.name.setText(work.getNamework());
         holder.detail.setText(work.getDetail_work());
         holder.date.setText(work.getTime());
-        if (work.isStatus()==1) holder.status.setChecked(true);//Toast.makeText(context, "123", Toast.LENGTH_SHORT).show(); //
-        else holder.status.setChecked(false);
+        if (work.isStatus()==1) holder.img_compltete.setVisibility(View.VISIBLE);//Toast.makeText(context, "123", Toast.LENGTH_SHORT).show(); //
         return convertView;
     }
     private  void Confirm_delete(String namework, final int IDwork)
@@ -109,7 +108,6 @@ public class WorkAdapter extends BaseAdapter {
         TextView name;
         TextView detail;
         TextView date;
-        CheckBox status;
-        ImageView img_deletework,img_update;
+        ImageView img_deletework,img_update,img_compltete;
     }
 }

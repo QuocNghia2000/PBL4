@@ -29,6 +29,7 @@ import com.android.volley.toolbox.Volley;
 import com.example.myapplication.R;
 import com.example.myapplication.activity.ChatActivity;
 import com.example.myapplication.activity.LoginActivity;
+import com.example.myapplication.activity.MainActivity;
 import com.example.myapplication.activity.RegisterActivity;
 
 import com.example.myapplication.adapter.ContactAdapter;
@@ -60,25 +61,28 @@ public class ContactFragment extends Fragment {
     ListView lvcontact;
     ContactAdapter adapter;
     private Handler mHandler;
-
+    int count=0;
+    boolean check=false;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
         View view = inflater.inflate(R.layout.contact_fragment, container, false);
         init(view);
+        //Get_user_online(url_user_online);
         this.mHandler = new Handler();
+        adapter = new ContactAdapter(Listuser,list_user_online, getActivity());
         m_Runnable.run();
-        Get_User_Contact(url_mess);
-        Get_user_online(url_user_online);
         return view;
     }
     private final Runnable m_Runnable = new Runnable()
     {
         public void run()
         {
-            ContactFragment.this.mHandler.postDelayed(m_Runnable, 500);
+            Get_user_online(url_user_online);
+            Get_User_Contact(url_mess);
+            adapter.notifyDataSetChanged();
+            ContactFragment.this.mHandler.postDelayed(m_Runnable, 2000);
         }
-
     };
     public void init(View view)
     {
@@ -164,6 +168,7 @@ public class ContactFragment extends Fragment {
         CustomRequest request = new CustomRequest(Request.Method.POST, url, null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
+                sms.clear();
                 try {
                     JSONArray jsonArray = response.getJSONArray("message");
                     for(int i=0;i<jsonArray.length();i++)
@@ -171,7 +176,16 @@ public class ContactFragment extends Fragment {
                         JSONObject jsonObject = jsonArray.getJSONObject(i);
                         sms.add(jsonObject.getInt("ToUserID"));
                     }
-                    GetData(url_user,sms);
+                    if(count!=jsonArray.length())
+                    {
+                        check=true;
+                        count=jsonArray.length();
+                    }
+                    else check=false;
+                    if(check)
+                    {
+                        GetData(url_user);
+                    }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -197,13 +211,14 @@ public class ContactFragment extends Fragment {
         };
         requestQueue.add(request);
     }
-    public  void GetData(String url,final ArrayList<Integer> sms)
+    public  void GetData(String url)
     {
         RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
         JsonObjectRequest jsonArrayRequest = new JsonObjectRequest(Request.Method.GET, url,null,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
+                        userArrayList.clear();
                         try {
                             JSONArray jsonArray= response.getJSONArray("user");
                             for(int i=0;i<jsonArray.length();i++)

@@ -41,6 +41,13 @@ public class Message implements Serializable {
         this.Text=_Text;
     }
 
+    public Message(int _UserID, int _ToUserID,Bitmap img)
+    {
+        this.UserID=_UserID;
+        this.ToUserID=_ToUserID;
+        this.image = img;
+    }
+
     public Bitmap getImage() {
         return image;
     }
@@ -97,4 +104,6 @@ public class Message implements Serializable {
     }
 
     public int IsImage() { return IsImage;}
+
+    public void setIsImage(int IsImage) { this.IsImage = IsImage;}
 }

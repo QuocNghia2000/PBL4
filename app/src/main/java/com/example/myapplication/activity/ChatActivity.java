@@ -74,7 +74,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     private EditText edtEnter;
     private ImageView imvSend,imvIcons,imvPicture,imvCamera;
     private int[] icons = {R.id.icon_shy, R.id.icon_sad, R.id.icon_happy, R.id.icon_superise, R.id.icon_angry,
-            R.id.icon_love, R.id.icon_cry, R.id.icon_died, R.id.icon_embarass, R.id.icon_sleepy};
+            R.id.icon_love, R.id.icon_cry, R.id.icon_died, R.id.icon_embarass, R.id.icon_close};
     private List<String> iconList;
     private RecyclerView rcv;
     private TextView nameClient;
@@ -96,6 +96,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         init();
         initRecyclerView();
         handle();
+        Get_Message(url);
+
         this.mHandler = new Handler();
         m_Runnable.run();
     }
@@ -104,9 +106,9 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         public void run()
         {
             Get_Message(url);
-            chatAdapter.notifyDataSetChanged();
             if(check)
             {
+                chatAdapter.notifyDataSetChanged();
                 scrollRecycleView();
             }
             ChatActivity.this.mHandler.postDelayed(m_Runnable, 1000);
@@ -176,8 +178,14 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                                 jsonObject.getString("Time"),
                                 jsonObject.getInt("IsImage")
                         ));
+                        if (smss.get(i).IsImage()==1)
+                        {
+                            String temp = smss.get(i).getText();
+                            smss.get(i).setImage(convertStringToBitmap(temp));
+                        }
                         //Toast.makeText(ChatActivity.this,String.valueOf(smss.size()),Toast.LENGTH_SHORT).show();
                     }
+
                     if(count!=jsonArray.length())
                     {
                         check=true;
@@ -210,6 +218,10 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         requestQueue.add(request);
     }
 
+    private Bitmap convertStringToBitmap(String s) {
+        byte[] manghinh = Base64.decode(s, Base64.DEFAULT);
+        return BitmapFactory.decodeByteArray(manghinh, 0, manghinh.length);
+    }
     public void initRecyclerView()
     {
         smss = new ArrayList<Message>();
@@ -217,6 +229,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         chatAdapter = new ChatAdapter(this,smss,ToUserID,UserID);
         llm =new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false);
         rcv.setLayoutManager(llm);
+        rcv.setHasFixedSize(true);
+        rcv.setItemViewCacheSize(10);
         rcv.setAdapter(chatAdapter);
         llm.setStackFromEnd(true);
     }
@@ -260,7 +274,6 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onClick(View v) {
                 layoutIcons.setVisibility(View.VISIBLE);
-                linearLayoutChat.setVisibility(View.GONE);
             }
         });
 
@@ -307,8 +320,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.icon_shy:
                 setIcon(":)", R.drawable.shy);
                 break;
-            case R.id.icon_sleepy:
-                setIcon("-.-", R.drawable.sleep);
+            case R.id.icon_close:
+                layoutIcons.setVisibility(View.GONE);
                 break;
             case R.id.icon_superise:
                 setIcon("0.0", R.drawable.superise);
@@ -317,8 +330,6 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public void setIcon(String sign, int id) {
-        layoutIcons.setVisibility(View.INVISIBLE);
-        linearLayoutChat.setVisibility(View.VISIBLE);
         Drawable d = getResources().getDrawable(id);
         addIconInEditText(d, sign);
     }
@@ -372,11 +383,10 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         String strDate = sdf.format(c.getTime());
         imgcurrent = new Message(UserID, ToUserID,getBitmapToByte(bm),strDate);
         SendImage(getBitmapToByte(bm));
-        Get_Message(url);
         chatAdapter.notifyDataSetChanged();
+        //Get_Message(url);
+        //chatAdapter.notifyDataSetChanged();
         //Toast.makeText(getApplicationContext(),getBitmapToByte(bm).length(),Toast.LENGTH_SHORT).show();
-        //imgcurrent.setPhoto(true);
-        //mFirebaseRef.child("Messages").child(timeSend.toString()).setValue(valueCurrent);//đẩy lên DB
     }
     public void SendImage(final String bitmap)
     {
