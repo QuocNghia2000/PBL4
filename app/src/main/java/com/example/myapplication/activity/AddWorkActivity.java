@@ -38,9 +38,9 @@ public class AddWorkActivity extends AppCompatActivity {
     DatePicker datePicker;
     TimePicker timePicker;
     String check;
-
-    String url_add_work="http://192.168.1.239:8888/PBL4/Git_PBL4/add_work.php";
-    String url_update_work="http://192.168.1.239:8888/PBL4/Git_PBL4/update_work.php";
+    String URL="http://192.168.1.239:8888/PBL4";
+    String url_add_work=URL+"/Git_PBL4/add_work.php";
+    String url_update_work=URL+"/Git_PBL4/update_work.php";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

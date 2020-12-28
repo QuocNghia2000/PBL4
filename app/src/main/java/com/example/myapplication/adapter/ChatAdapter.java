@@ -1,16 +1,19 @@
 package com.example.myapplication.adapter;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.ImageSpan;
 import android.util.Base64;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -25,22 +28,23 @@ import com.example.myapplication.model.User;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
     private List<Message> sms;
     private List<Icons> iconList;
-    private Context mContext;
+    private ChatActivity mContext;
     private int ToUserID,UserID;
     private LayoutInflater mLayoutInflater;
 //    public static boolean isMe;
 
-    public ChatAdapter(Context context, List<Message> sms) {
+    public ChatAdapter(ChatActivity context, List<Message> sms) {
         this.mContext = context;
         this.sms = sms;
         this.mLayoutInflater = LayoutInflater.from(context);
     }
 
-    public ChatAdapter(Context context, List<Message> sms,int ToUserID,int UserID) {
+    public ChatAdapter(ChatActivity context, List<Message> sms,int ToUserID,int UserID) {
         this.mContext = context;
         this.sms = sms;
         this.ToUserID = ToUserID;
@@ -59,10 +63,30 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder viewHolder, int position) {
+    public void onBindViewHolder(@NonNull final ViewHolder viewHolder, int position) {
 
-        Message message = sms.get(position);
+        final Message message = sms.get(position);
         if (message != null) {
+            viewHolder.imvSend.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    viewHolder.delete.setVisibility(View.VISIBLE);
+                    return false;
+                }
+            });
+            viewHolder.tvSend.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    viewHolder.delete.setVisibility(View.VISIBLE);
+                    return false;
+                }
+            });
+            viewHolder.delete.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Confirm_delete(message.MessageID);
+                }
+            });
             if (message.getUserID() == UserID && message.getToUserID() == ToUserID && message.IsImage() != 1) {
                 viewHolder.tvSend.setText(message.getText());
                 for (ChatAdapter.Icons value : iconList) {
@@ -78,6 +102,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
                     }
                 }
                 viewHolder.tvSend.setVisibility(View.VISIBLE);
+                viewHolder.delete.setVisibility(View.INVISIBLE);
                 viewHolder.tvReceive.setVisibility(View.INVISIBLE);
                 viewHolder.imvReceive.setVisibility(View.GONE);
                 viewHolder.imvSend.setVisibility(View.GONE);
@@ -96,30 +121,51 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
                     }
                 }
                 viewHolder.tvSend.setVisibility(View.INVISIBLE);
+                viewHolder.delete.setVisibility(View.INVISIBLE);
                 viewHolder.tvReceive.setVisibility(View.VISIBLE);
                 viewHolder.imvReceive.setVisibility(View.GONE);
                 viewHolder.imvSend.setVisibility(View.GONE);
             } else if (message.getToUserID() == ToUserID && message.getUserID() == UserID && message.IsImage() == 1) {
                 viewHolder.imvSend.setImageBitmap(message.getImage());
+                viewHolder.delete.setVisibility(View.INVISIBLE);
                 viewHolder.imvSend.setVisibility(View.VISIBLE);
                 viewHolder.tvSend.setVisibility(View.INVISIBLE);
                 viewHolder.tvReceive.setVisibility(View.INVISIBLE);
                 viewHolder.imvReceive.setVisibility(View.INVISIBLE);
             } else if (message.getToUserID() == UserID && message.getUserID() == ToUserID && message.IsImage() == 1) {
                 viewHolder.imvReceive.setImageBitmap(message.getImage());
+                viewHolder.delete.setVisibility(View.INVISIBLE);
                 viewHolder.imvReceive.setVisibility(View.VISIBLE);
                 viewHolder.tvSend.setVisibility(View.INVISIBLE);
                 viewHolder.tvReceive.setVisibility(View.INVISIBLE);
                 viewHolder.imvSend.setVisibility(View.INVISIBLE);
             } else {
                 viewHolder.tvSend.setVisibility(View.INVISIBLE);
+                viewHolder.delete.setVisibility(View.INVISIBLE);
                 viewHolder.tvReceive.setVisibility(View.INVISIBLE);
                 viewHolder.imvSend.setVisibility(View.INVISIBLE);
                 viewHolder.imvReceive.setVisibility(View.INVISIBLE);
             }
         }
     }
-
+    private  void Confirm_delete(final int ID_sms)
+    {
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+        builder.setMessage("Bạn có muốn xoá tin nhắn này không?");
+        builder.setPositiveButton("Có", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                mContext.Delete_Message(ID_sms);
+            }
+        });
+        builder.setNegativeButton("Không", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+        builder.create().show();
+    }
     @Override
     public int getItemCount() {
         return sms.size();
@@ -137,6 +183,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
         private TextView tvReceive;
         private ImageView imvSend;
         private ImageView imvReceive;
+        private  ImageView delete;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -144,6 +191,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
             tvReceive = (TextView) itemView.findViewById(R.id.sms_receive);
             imvSend = (ImageView) itemView.findViewById(R.id.img_send);
             imvReceive = (ImageView) itemView.findViewById(R.id.img_recieve);
+            delete=(ImageView) itemView.findViewById(R.id.delete_sms);
         }
     }
 

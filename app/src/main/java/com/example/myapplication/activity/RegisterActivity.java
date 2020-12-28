@@ -29,7 +29,7 @@ import java.util.Map;
 public class RegisterActivity extends AppCompatActivity {
     EditText edtuser,edtpass,edtfullname;
     Button bt_register;
-    String url_register ="https://syphiloid-arguments.000webhostapp.com/Git_PBL4//register.php";
+    String url_register ="http://192.168.1.239:8888/PBL4/Git_PBL4//register.php";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

@@ -8,17 +8,29 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:padding="5dp">
+
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:id="@+id/delete_sms"
+                android:checkable="false"
+                android:layout_marginRight="10dp"
+                android:adjustViewBounds="true"
+                android:layout_centerHorizontal="true"
+                android:background="@drawable/ic_delete_sms"
+                android:visibility="gone"
+                />
+
         <TextView
             android:id="@+id/sms_send"
             android:layout_width="196dp"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
-            android:visibility="visible"
-            android:layout_centerVertical="true"
-            android:textColor="#000"
+            android:background="@drawable/icon_user2"
             android:gravity="center"
+            android:textColor="#000"
             android:textSize="20dp"
-            android:background="@drawable/icon_user2"/>
+            android:visibility="visible" />
 
         <ImageView
             android:id="@+id/img_send"

@@ -29,7 +29,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class UpdateWorkActivity extends AppCompatActivity {
-    String url_update_work="http://192.168.1.239:8888/PBL4/Git_PBL4/update_work.php";
+    String URL="http://192.168.1.239:8888/PBL4";
+    String url_update_work=URL+"/Git_PBL4/update_work.php";
     private EditText name,detail;
     TimePicker timePicker;
     DatePicker datePicker;

@@ -3,6 +3,7 @@
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:id="@+id/ll_contact"
     android:padding="10dp"
     android:gravity="center">
 
@@ -29,4 +30,15 @@
         android:layout_weight="0.2"
         android:text="offline"
         android:gravity="right"/>
+    <ImageView
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:id="@+id/delete_UC"
+        android:checkable="false"
+        android:layout_marginRight="10dp"
+        android:adjustViewBounds="true"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/ic_delete_sms"
+        android:visibility="gone"
+        />
 </LinearLayout>

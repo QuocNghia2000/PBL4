@@ -48,9 +48,10 @@ import java.util.Map;
 import static com.example.myapplication.activity.LoginActivity.listuser;
 
 public class ContactFragment extends Fragment {
-    String url_mess="http://192.168.1.239:8888/PBL4/Git_PBL4/message_user.php";
-    String url_user="http://192.168.1.239:8888/PBL4/Git_PBL4/select_user.php";
-    String url_user_online="http://192.168.1.239:8888/PBL4/Git_PBL4/login.php";
+    String URL="http://192.168.1.239:8888/PBL4";
+    String url_mess=URL+"/Git_PBL4/message_user.php";
+    String url_user=URL+"/Git_PBL4/select_user.php";
+    String url_user_online=URL+"/Git_PBL4/login.php";
     private ArrayList<User> Listuser;
     public User UserCurrent;
     String fullname;
@@ -70,7 +71,7 @@ public class ContactFragment extends Fragment {
         init(view);
         //Get_user_online(url_user_online);
         this.mHandler = new Handler();
-        adapter = new ContactAdapter(Listuser,list_user_online, getActivity());
+        adapter = new ContactAdapter(Listuser,0,list_user_online, getActivity());
         m_Runnable.run();
         return view;
     }
@@ -81,7 +82,7 @@ public class ContactFragment extends Fragment {
             Get_user_online(url_user_online);
             Get_User_Contact(url_mess);
             adapter.notifyDataSetChanged();
-            ContactFragment.this.mHandler.postDelayed(m_Runnable, 2000);
+            ContactFragment.this.mHandler.postDelayed(m_Runnable, 3000);
         }
     };
     public void init(View view)
@@ -108,7 +109,7 @@ public class ContactFragment extends Fragment {
             if(check==false)  Listuser.add(userArrayList.get((i)));
         }
         //Toast.makeText(getActivity(), String.valueOf(idCurrentUser), Toast.LENGTH_SHORT).show();
-        adapter = new ContactAdapter(Listuser,list_user_online, getActivity());
+        adapter = new ContactAdapter(Listuser,UserCurrent.getUserID(),list_user_online, getActivity());
         lvcontact.setAdapter(adapter);
         //Toast.makeText(getActivity(),String.valueOf(Listuser.size()),Toast.LENGTH_SHORT).show();
         lvcontact.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -131,6 +132,7 @@ public class ContactFragment extends Fragment {
             CustomRequest request = new CustomRequest(Request.Method.POST, url, null, new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject response) {
+                    list_user_online.clear();
                     try {
                         JSONArray jsonArray = response.getJSONArray("login");
                         for (int i = 0; i < jsonArray.length(); i++) {

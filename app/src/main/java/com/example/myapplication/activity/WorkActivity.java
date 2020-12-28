@@ -44,8 +44,9 @@ public class WorkActivity extends AppCompatActivity {
     private ImageView img_update,img_add,img_deletework;
     TimePicker timePicker;
     DatePicker datePicker;
-    public static String url_get_work="http://192.168.1.239:8888/PBL4/Git_PBL4/select_work.php";
-    String url_delete_work="http://192.168.1.239:8888/PBL4/Git_PBL4/delete_work.php";
+    String URL="http://192.168.1.239:8888/PBL4";
+    public  String url_get_work=URL+"/Git_PBL4/select_work.php";
+    String url_delete_work=URL+"/Git_PBL4/delete_work.php";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

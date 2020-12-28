@@ -49,15 +49,15 @@ public class MainActivity extends AppCompatActivity {
     private ViewPager viewPager;
     private TabLayout tabLayout;
     public User UserCurrent;
-    ImageButton img_delete,imgbt_logout;
+    ImageButton img_delete;
     MultiAutoCompleteTextView edt_search;
     ArrayList<User> list_user;
     ArrayList<String> listfullname;
     public ArrayList<Work> listwork,listworkUser;
-
-    String url="http://192.168.1.239:8888/PBL4/Git_PBL4/search.php";
-    String url_logout="http://192.168.1.239:8888/PBL4/Git_PBL4/user_logout.php";
-    String url_delete_work="http://192.168.1.239:8888/PBL4/Git_PBL4/delete_work.php";
+    String URL="http://192.168.1.239:8888/PBL4";
+    String url=URL+"/Git_PBL4/search.php";
+    String url_logout=URL+"/Git_PBL4/user_logout.php";
+    String url_del_UC=URL+"/Git_PBL4/delete_message_user.php";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -187,6 +187,37 @@ public class MainActivity extends AppCompatActivity {
                 edt_search.setText("");
             }
         });
+    }
+    public void Delete_User_Contact(final int UserID, final int ToUserID)
+    {
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, url_del_UC,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        if(response.trim().equals("Oke"))
+                        {
+                            //Toast.makeText(getApplicationContext(),"Xoá thành công",Toast.LENGTH_SHORT).show();
+                        }
+                        else {
+                            Toast.makeText(getApplicationContext(),"Lỗi",Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(getApplicationContext(),"Xảy ra lỗi",Toast.LENGTH_SHORT).show();
+            }
+        }){
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String ,String> params = new HashMap<>();
+                params.put("UserID",String.valueOf(UserID));//MessageID
+                params.put("ToUserID",String.valueOf(ToUserID));//MessageID
+                return params;
+            }
+        };
+        requestQueue.add(stringRequest);
     }
 
     @Override

@@ -24,6 +24,7 @@ import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -68,9 +69,10 @@ import java.util.Map;
 
 public class ChatActivity extends AppCompatActivity implements View.OnClickListener{
     public static int ToUserID,UserID;
-    private String url="http://192.168.1.239:8888/PBL4/Git_PBL4/select_message.php";
-    private String url_sms="http://192.168.1.239:8888/PBL4/Git_PBL4/insert_message.php";
-    String url_count="http://192.168.1.239:8888/PBL4/Git_PBL4/count.php";
+    String URL="http://192.168.1.239:8888/PBL4";
+    private String url=URL+"/Git_PBL4/select_message.php";
+    private String url_sms=URL+"/Git_PBL4/insert_message.php";
+    String url_delete_sms=URL+"/Git_PBL4/delete_message.php";
     private static ArrayList<Message> smss;
     private EditText edtEnter;
     private ImageView imvSend,imvIcons,imvPicture,imvCamera;
@@ -84,6 +86,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     private static String textsms;
     private Handler mHandler;
     LinearLayoutManager llm;
+    ImageView delete_sms;
     Message imgcurrent;
     boolean check=false;
     int count=0;
@@ -246,6 +249,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         imvCamera = (ImageView) findViewById(R.id.imv_camera);
         layoutIcons = (LinearLayout) findViewById(R.id.icons);
         linearLayoutChat = (LinearLayout) findViewById(R.id.line_chat);
+        delete_sms=(ImageView) findViewById(R.id.delete_sms);
         iconList = new ArrayList<>();
         for (int i = 0; i < icons.length; i++) {
             findViewById(icons[i]).setOnClickListener((View.OnClickListener) this);
@@ -292,6 +296,37 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 startActivityForResult(pickPhoto, 1);
             }
         });
+    }
+    public void Delete_Message(final int ID)
+    {
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, url_delete_sms,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        if(response.trim().equals("Oke"))
+                        {
+                            Toast.makeText(getApplicationContext(),"Xoá thành công",Toast.LENGTH_SHORT).show();
+                            Get_Message(url);
+                        }
+                        else {
+                            Toast.makeText(getApplicationContext(),"Lỗi",Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(getApplicationContext(),"Xảy ra lỗi",Toast.LENGTH_SHORT).show();
+            }
+        }){
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String ,String> params = new HashMap<>();
+                params.put("MessageID",String.valueOf(ID));//MessageID
+                return params;
+            }
+        };
+        requestQueue.add(stringRequest);
     }
 
     @Override

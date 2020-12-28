@@ -59,9 +59,10 @@ public class LoginActivity extends AppCompatActivity {
     SharedPreferences sharedpreferences;
     public static ArrayList<User> listuser;
     public static int UserID;
-    String url="http://192.168.1.239:8888/PBL4/Git_PBL4/select_user.php";
-    String url_login="http://192.168.1.239:8888/PBL4/Git_PBL4/Insert_login.php";
-    String url_exist="http://192.168.1.239:8888/PBL4/Git_PBL4/user_exist.php";
+    String URL="http://192.168.1.239:8888/PBL4";
+    String url=URL+"/Git_PBL4/select_user.php";
+    String url_login=URL+"/Git_PBL4/Insert_login.php";
+    String url_exist=URL+"/Git_PBL4/user_exist.php";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
